@@ -1,0 +1,91 @@
+2025-06-11 00:06:54,743 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-11 00:06:56,048 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-11 00:06:56,048 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-11 00:06:59,786 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 00:06:59] "GET / HTTP/1.1" 200 -
+2025-06-11 00:07:32,444 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=-5lviu6ZDXo
+2025-06-11 00:07:32,445 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 00:07:32] "GET /download?url=https://www.youtube.com/watch?v%3D-5lviu6ZDXo HTTP/1.1" 200 -
+2025-06-11 00:07:32,446 - __main__ - INFO - 找到cookies文件，将使用: D:\Projects\X vedio downloader\cookies.txt
+2025-06-11 00:07:42,261 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Apple researchers' AI red flag.mp4
+2025-06-11 00:07:42,261 - __main__ - INFO - 启用高速下载模式 (Aria2c + 并发片段)
+2025-06-11 00:08:09,866 - __main__ - INFO - 下载完成: Apple researchers' AI red flag.mp4
+2025-06-11 00:15:03,131 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=BGgsoIgbT_Y
+2025-06-11 00:15:03,131 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 00:15:03] "GET /download?url=https://www.youtube.com/watch?v%3DBGgsoIgbT_Y HTTP/1.1" 200 -
+2025-06-11 00:15:03,132 - __main__ - INFO - 找到cookies文件，将使用: D:\Projects\X vedio downloader\cookies.txt
+2025-06-11 00:15:10,104 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\How Cursor is building the future of AI coding with Claude.mp4
+2025-06-11 00:15:10,104 - __main__ - INFO - 启用高速下载模式 (Aria2c + 并发片段)
+2025-06-11 00:15:44,343 - __main__ - INFO - 下载完成: How Cursor is building the future of AI coding with Claude.mp4
+2025-06-11 20:54:16,982 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-11 20:54:18,283 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-11 20:54:18,283 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-11 20:54:21,558 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 20:54:21] "GET / HTTP/1.1" 200 -
+2025-06-11 20:54:23,372 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 20:54:23] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-11 20:54:44,230 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=NTLk53h7u_k
+2025-06-11 20:54:44,230 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 20:54:44] "GET /download?url=https://www.youtube.com/watch?v%3DNTLk53h7u_k HTTP/1.1" 200 -
+2025-06-11 20:54:50,455 - __main__ - INFO - 下载模式检测: 合并模式
+2025-06-11 20:54:50,455 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Apple Execs Defend Siri Delays, AI Plan and Apple Intelligence _ WSJ.mp4
+2025-06-11 20:54:50,462 - __main__ - INFO - 启用高速下载模式 (Aria2c + 并发片段)
+2025-06-11 20:54:56,148 - __main__ - INFO - 检测到下载部分切换，进入第二部分 (音频)
+2025-06-11 20:55:00,321 - __main__ - INFO - 检测到下载部分切换，进入第二部分 (音频)
+2025-06-11 20:55:02,902 - __main__ - INFO - 下载完成: Apple Execs Defend Siri Delays, AI Plan and Apple Intelligence _ WSJ.mp4
+2025-06-11 20:55:19,666 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 20:55:19] "GET / HTTP/1.1" 200 -
+2025-06-11 20:55:25,235 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=vRQs7qfIDaU
+2025-06-11 20:55:25,235 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 20:55:25] "GET /download?url=https://www.youtube.com/watch?v%3DvRQs7qfIDaU HTTP/1.1" 200 -
+2025-06-11 20:55:29,620 - __main__ - INFO - 下载模式检测: 合并模式
+2025-06-11 20:55:29,620 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Stanford CS25_ V5 I On the Biology of a Large Language Model, Josh Batson of Anthropic.mp4
+2025-06-11 20:55:29,620 - __main__ - INFO - 启用高速下载模式 (Aria2c + 并发片段)
+2025-06-11 20:55:34,252 - __main__ - INFO - 检测到下载部分切换，进入第二部分 (音频)
+2025-06-11 20:56:01,481 - __main__ - INFO - 检测到下载部分切换，进入第二部分 (音频)
+2025-06-11 20:57:31,292 - __main__ - INFO - 下载完成: Stanford CS25_ V5 I On the Biology of a Large Language Model, Josh Batson of Anthropic.mp4
+2025-06-11 21:05:31,868 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-11 21:05:33,126 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-11 21:05:33,126 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-11 21:05:35,666 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 21:05:35] "GET / HTTP/1.1" 200 -
+2025-06-11 21:05:45,359 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=egeqfUGiETY
+2025-06-11 21:05:45,359 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 21:05:45] "GET /download?url=https://www.youtube.com/watch?v%3DegeqfUGiETY HTTP/1.1" 200 -
+2025-06-11 21:05:50,445 - __main__ - INFO - 下载模式检测: 合并模式
+2025-06-11 21:05:50,446 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Gates, Ballmer and Nadella on Microsoft in the AI Era _ The Circuit with Emily Chang.mp4
+2025-06-11 21:05:50,447 - __main__ - INFO - 启用高速下载模式 (Aria2c + 并发片段)
+2025-06-11 21:05:56,580 - __main__ - INFO - 检测到下载部分切换，进入第二部分 (音频)
+2025-06-11 21:07:28,215 - __main__ - INFO - 检测到下载部分切换，进入第二部分 (音频)
+2025-06-11 21:07:39,043 - __main__ - INFO - 下载完成: Gates, Ballmer and Nadella on Microsoft in the AI Era _ The Circuit with Emily Chang.mp4
+2025-06-11 23:14:47,386 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-11 23:14:48,669 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-11 23:14:48,669 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-11 23:14:51,118 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 23:14:51] "GET / HTTP/1.1" 200 -
+2025-06-11 23:14:52,981 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 23:14:52] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-11 23:14:56,374 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=gE1g6ZC0C8Y
+2025-06-11 23:14:56,375 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 23:14:56] "GET /download?url=https://www.youtube.com/watch?v%3DgE1g6ZC0C8Y HTTP/1.1" 200 -
+2025-06-11 23:15:04,056 - __main__ - INFO - 下载模式检测: 合并模式
+2025-06-11 23:15:04,057 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Nvidia CEO_ Quantum computing is reaching an inflection point.mp4
+2025-06-11 23:15:04,058 - __main__ - INFO - 启用高速下载模式 (Aria2c + 并发片段)
+2025-06-11 23:15:35,306 - __main__ - INFO - 检测到新的下载目标，切换到第 1/2 部分
+2025-06-11 23:16:10,354 - __main__ - INFO - 检测到新的下载目标，切换到第 2/2 部分
+2025-06-11 23:16:27,057 - __main__ - INFO - 下载完成: Nvidia CEO_ Quantum computing is reaching an inflection point.mp4
+2025-06-11 23:21:18,140 - __main__ - INFO - 收到下载请求 - URL: https://x.com/abhshkdz/status/1932469194978922555
+2025-06-11 23:21:18,140 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 23:21:18] "GET /download?url=https://x.com/abhshkdz/status/1932469194978922555 HTTP/1.1" 200 -
+2025-06-11 23:21:22,214 - __main__ - INFO - 下载模式检测: 合并模式
+2025-06-11 23:21:22,214 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Abhishek Das - We're excited to launch Scouts — always-on AI agents that monitor the....mp4
+2025-06-11 23:21:22,214 - __main__ - INFO - 启用高速下载模式 (Aria2c + 并发片段)
+2025-06-11 23:21:24,856 - __main__ - INFO - 检测到新的下载目标，切换到第 1/2 部分
+2025-06-11 23:21:48,078 - __main__ - INFO - 检测到新的下载目标，切换到第 2/2 部分
+2025-06-11 23:22:03,292 - __main__ - INFO - 下载完成: Abhishek Das - We're excited to launch Scouts — always-on AI agents that monitor the....mp4
+2025-06-11 23:22:30,543 - __main__ - INFO - 收到下载请求 - URL: https://x.com/lexfridman/status/1930686292699893972
+2025-06-11 23:22:30,543 - werkzeug - INFO - 192.168.2.247 - - [11/Jun/2025 23:22:30] "GET /download?url=https://x.com/lexfridman/status/1930686292699893972 HTTP/1.1" 200 -
+2025-06-11 23:22:33,412 - __main__ - INFO - 下载模式检测: 合并模式
+2025-06-11 23:22:33,413 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Lex Fridman - Here's my conversation with @sundarpichai, CEO of Google and Alphabet....mp4
+2025-06-11 23:22:33,414 - __main__ - INFO - 启用高速下载模式 (Aria2c + 并发片段)
+2025-06-11 23:22:37,758 - __main__ - INFO - 检测到新的下载目标，切换到第 1/2 部分
+2025-06-11 23:27:41,635 - __main__ - INFO - 检测到新的下载目标，切换到第 2/2 部分
+2025-06-11 23:29:46,315 - __main__ - INFO - 下载完成: Lex Fridman - Here's my conversation with @sundarpichai, CEO of Google and Alphabet....mp4

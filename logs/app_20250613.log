@@ -1,0 +1,329 @@
+2025-06-13 22:47:14,584 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-13 22:47:15,872 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-13 22:47:15,872 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-13 22:47:18,342 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 22:47:18] "GET / HTTP/1.1" 200 -
+2025-06-13 22:47:20,094 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 22:47:20] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-13 22:47:54,362 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=Rgwty6dGsYI&t=523s
+2025-06-13 22:48:03,055 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 22:48:03] "GET /info?url=https://www.youtube.com/watch?v%3DRgwty6dGsYI%26t%3D523s HTTP/1.1" 200 -
+2025-06-13 22:53:05,386 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-13 22:53:06,671 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-13 22:53:06,671 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-13 22:53:10,155 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 22:53:10] "GET / HTTP/1.1" 200 -
+2025-06-13 22:53:15,614 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=Rgwty6dGsYI&t=523s
+2025-06-13 22:53:25,817 - __main__ - WARNING - 'requested_subtitles' 未找到, 尝试备用方法。
+2025-06-13 22:53:25,817 - __main__ - INFO - 通过备用方法找到字幕: ['aa', 'aa-en-j3PyPqV-e1s', 'ab', 'ab-en-j3PyPqV-e1s', 'af', 'af-en-j3PyPqV-e1s', 'ak', 'ak-en-j3PyPqV-e1s', 'am', 'am-en-j3PyPqV-e1s', 'ar', 'ar-en-j3PyPqV-e1s', 'as', 'as-en-j3PyPqV-e1s', 'ay', 'ay-en-j3PyPqV-e1s', 'az', 'az-en-j3PyPqV-e1s', 'ba', 'ba-en-j3PyPqV-e1s', 'be', 'be-en-j3PyPqV-e1s', 'bg', 'bg-en-j3PyPqV-e1s', 'bho', 'bho-en-j3PyPqV-e1s', 'bn', 'bn-en-j3PyPqV-e1s', 'bo', 'bo-en-j3PyPqV-e1s', 'br', 'br-en-j3PyPqV-e1s', 'bs', 'bs-en-j3PyPqV-e1s', 'ca', 'ca-en-j3PyPqV-e1s', 'ceb', 'ceb-en-j3PyPqV-e1s', 'co', 'co-en-j3PyPqV-e1s', 'crs', 'crs-en-j3PyPqV-e1s', 'cs', 'cs-en-j3PyPqV-e1s', 'cy', 'cy-en-j3PyPqV-e1s', 'da', 'da-en-j3PyPqV-e1s', 'de', 'de-en-j3PyPqV-e1s', 'dv', 'dv-en-j3PyPqV-e1s', 'dz', 'dz-en-j3PyPqV-e1s', 'ee', 'ee-en-j3PyPqV-e1s', 'el', 'el-en-j3PyPqV-e1s', 'en', 'en-en-j3PyPqV-e1s', 'en-j3PyPqV-e1s', 'en-orig', 'eo', 'eo-en-j3PyPqV-e1s', 'es', 'es-en-j3PyPqV-e1s', 'et', 'et-en-j3PyPqV-e1s', 'eu', 'eu-en-j3PyPqV-e1s', 'fa', 'fa-en-j3PyPqV-e1s', 'fi', 'fi-en-j3PyPqV-e1s', 'fil', 'fil-en-j3PyPqV-e1s', 'fj', 'fj-en-j3PyPqV-e1s', 'fo', 'fo-en-j3PyPqV-e1s', 'fr', 'fr-en-j3PyPqV-e1s', 'fy', 'fy-en-j3PyPqV-e1s', 'ga', 'ga-en-j3PyPqV-e1s', 'gaa', 'gaa-en-j3PyPqV-e1s', 'gd', 'gd-en-j3PyPqV-e1s', 'gl', 'gl-en-j3PyPqV-e1s', 'gn', 'gn-en-j3PyPqV-e1s', 'gu', 'gu-en-j3PyPqV-e1s', 'gv', 'gv-en-j3PyPqV-e1s', 'ha', 'ha-en-j3PyPqV-e1s', 'haw', 'haw-en-j3PyPqV-e1s', 'hi', 'hi-en-j3PyPqV-e1s', 'hmn', 'hmn-en-j3PyPqV-e1s', 'hr', 'hr-en-j3PyPqV-e1s', 'ht', 'ht-en-j3PyPqV-e1s', 'hu', 'hu-en-j3PyPqV-e1s', 'hy', 'hy-en-j3PyPqV-e1s', 'id', 'id-en-j3PyPqV-e1s', 'ig', 'ig-en-j3PyPqV-e1s', 'is', 'is-en-j3PyPqV-e1s', 'it', 'it-en-j3PyPqV-e1s', 'iu', 'iu-en-j3PyPqV-e1s', 'iw', 'iw-en-j3PyPqV-e1s', 'ja', 'ja-en-j3PyPqV-e1s', 'jv', 'jv-en-j3PyPqV-e1s', 'ka', 'ka-en-j3PyPqV-e1s', 'kha', 'kha-en-j3PyPqV-e1s', 'kk', 'kk-en-j3PyPqV-e1s', 'kl', 'kl-en-j3PyPqV-e1s', 'km', 'km-en-j3PyPqV-e1s', 'kn', 'kn-en-j3PyPqV-e1s', 'ko', 'ko-en-j3PyPqV-e1s', 'kri', 'kri-en-j3PyPqV-e1s', 'ku', 'ku-en-j3PyPqV-e1s', 'ky', 'ky-en-j3PyPqV-e1s', 'la', 'la-en-j3PyPqV-e1s', 'lb', 'lb-en-j3PyPqV-e1s', 'lg', 'lg-en-j3PyPqV-e1s', 'ln', 'ln-en-j3PyPqV-e1s', 'lo', 'lo-en-j3PyPqV-e1s', 'lt', 'lt-en-j3PyPqV-e1s', 'lua', 'lua-en-j3PyPqV-e1s', 'luo', 'luo-en-j3PyPqV-e1s', 'lv', 'lv-en-j3PyPqV-e1s', 'mfe', 'mfe-en-j3PyPqV-e1s', 'mg', 'mg-en-j3PyPqV-e1s', 'mi', 'mi-en-j3PyPqV-e1s', 'mk', 'mk-en-j3PyPqV-e1s', 'ml', 'ml-en-j3PyPqV-e1s', 'mn', 'mn-en-j3PyPqV-e1s', 'mr', 'mr-en-j3PyPqV-e1s', 'ms', 'ms-en-j3PyPqV-e1s', 'mt', 'mt-en-j3PyPqV-e1s', 'my', 'my-en-j3PyPqV-e1s', 'ne', 'ne-en-j3PyPqV-e1s', 'new', 'new-en-j3PyPqV-e1s', 'nl', 'nl-en-j3PyPqV-e1s', 'no', 'no-en-j3PyPqV-e1s', 'nso', 'nso-en-j3PyPqV-e1s', 'ny', 'ny-en-j3PyPqV-e1s', 'oc', 'oc-en-j3PyPqV-e1s', 'om', 'om-en-j3PyPqV-e1s', 'or', 'or-en-j3PyPqV-e1s', 'os', 'os-en-j3PyPqV-e1s', 'pa', 'pa-en-j3PyPqV-e1s', 'pam', 'pam-en-j3PyPqV-e1s', 'pl', 'pl-en-j3PyPqV-e1s', 'ps', 'ps-en-j3PyPqV-e1s', 'pt', 'pt-PT', 'pt-PT-en-j3PyPqV-e1s', 'pt-en-j3PyPqV-e1s', 'qu', 'qu-en-j3PyPqV-e1s', 'rn', 'rn-en-j3PyPqV-e1s', 'ro', 'ro-en-j3PyPqV-e1s', 'ru', 'ru-en-j3PyPqV-e1s', 'rw', 'rw-en-j3PyPqV-e1s', 'sa', 'sa-en-j3PyPqV-e1s', 'sd', 'sd-en-j3PyPqV-e1s', 'sg', 'sg-en-j3PyPqV-e1s', 'si', 'si-en-j3PyPqV-e1s', 'sk', 'sk-en-j3PyPqV-e1s', 'sl', 'sl-en-j3PyPqV-e1s', 'sm', 'sm-en-j3PyPqV-e1s', 'sn', 'sn-en-j3PyPqV-e1s', 'so', 'so-en-j3PyPqV-e1s', 'sq', 'sq-en-j3PyPqV-e1s', 'sr', 'sr-en-j3PyPqV-e1s', 'ss', 'ss-en-j3PyPqV-e1s', 'st', 'st-en-j3PyPqV-e1s', 'su', 'su-en-j3PyPqV-e1s', 'sv', 'sv-en-j3PyPqV-e1s', 'sw', 'sw-en-j3PyPqV-e1s', 'ta', 'ta-en-j3PyPqV-e1s', 'te', 'te-en-j3PyPqV-e1s', 'tg', 'tg-en-j3PyPqV-e1s', 'th', 'th-en-j3PyPqV-e1s', 'ti', 'ti-en-j3PyPqV-e1s', 'tk', 'tk-en-j3PyPqV-e1s', 'tn', 'tn-en-j3PyPqV-e1s', 'to', 'to-en-j3PyPqV-e1s', 'tr', 'tr-en-j3PyPqV-e1s', 'ts', 'ts-en-j3PyPqV-e1s', 'tt', 'tt-en-j3PyPqV-e1s', 'tum', 'tum-en-j3PyPqV-e1s', 'ug', 'ug-en-j3PyPqV-e1s', 'uk', 'uk-en-j3PyPqV-e1s', 'ur', 'ur-en-j3PyPqV-e1s', 'uz', 'uz-en-j3PyPqV-e1s', 've', 've-en-j3PyPqV-e1s', 'vi', 'vi-en-j3PyPqV-e1s', 'war', 'war-en-j3PyPqV-e1s', 'wo', 'wo-en-j3PyPqV-e1s', 'xh', 'xh-en-j3PyPqV-e1s', 'yi', 'yi-en-j3PyPqV-e1s', 'yo', 'yo-en-j3PyPqV-e1s', 'zh-Hans', 'zh-Hans-en-j3PyPqV-e1s', 'zh-Hant', 'zh-Hant-en-j3PyPqV-e1s', 'zu', 'zu-en-j3PyPqV-e1s']
+2025-06-13 22:53:25,817 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 22:53:25] "GET /info?url=https://www.youtube.com/watch?v%3DRgwty6dGsYI%26t%3D523s HTTP/1.1" 200 -
+2025-06-13 22:54:08,184 - __main__ - INFO - 收到【字幕】下载请求 - URL: https://www.youtube.com/watch?v=Rgwty6dGsYI&t=523s, Subtitle: en
+2025-06-13 22:54:16,534 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 22:54:16] "GET /download_subs?url=https://www.youtube.com/watch?v%3DRgwty6dGsYI%26t%3D523s&sub_lang=en HTTP/1.1" 200 -
+2025-06-13 22:54:23,365 - __main__ - INFO - 智能检测到实际生成的文件: C:\Users\WINDOWS\Desktop\Redefining Robotics with Carolina Parada.en.srt.en-j3PyPqV-e1s.vtt
+2025-06-13 22:54:23,365 - __main__ - INFO - 已成功重命名为: C:\Users\WINDOWS\Desktop\Redefining Robotics with Carolina Parada.en.srt
+2025-06-13 22:54:23,365 - __main__ - INFO - 下载完成: Redefining Robotics with Carolina Parada.en.srt
+2025-06-13 22:56:50,357 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-13 22:56:51,643 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-13 22:56:51,643 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-13 22:56:54,984 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 22:56:54] "GET / HTTP/1.1" 200 -
+2025-06-13 22:57:19,138 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=BYS-qeO2zbo
+2025-06-13 22:57:25,373 - __main__ - INFO - 找到手动上传的字幕: ['en']
+2025-06-13 22:57:25,373 - __main__ - INFO - 找到原始自动生成的字幕: ['en', 'ar', 'nl', 'fr', 'de', 'hi', 'id', 'it', 'ja', 'ko', 'pt', 'ru', 'es', 'th', 'tr', 'uk', 'vi', 'ab', 'aa', 'af', 'ak', 'sq', 'am', 'hy', 'as', 'ay', 'az', 'bn', 'ba', 'eu', 'be', 'bho', 'bs', 'br', 'bg', 'my', 'ca', 'ceb', 'co', 'hr', 'cs', 'da', 'dv', 'dz', 'eo', 'et', 'ee', 'fo', 'fj', 'fil', 'fi', 'gaa', 'gl', 'lg', 'ka', 'el', 'gn', 'gu', 'ht', 'ha', 'haw', 'iw', 'hmn', 'hu', 'is', 'ig', 'iu', 'ga', 'jv', 'kl', 'kn', 'kk', 'kha', 'km', 'rw', 'kri', 'ku', 'ky', 'lo', 'la', 'lv', 'ln', 'lt', 'lua', 'luo', 'lb', 'mk', 'mg', 'ms', 'ml', 'mt', 'gv', 'mi', 'mr', 'mn', 'mfe', 'ne', 'new', 'nso', 'no', 'ny', 'oc', 'or', 'om', 'os', 'pam', 'ps', 'fa', 'pl', 'pa', 'qu', 'ro', 'rn', 'sm', 'sg', 'sa', 'gd', 'sr', 'crs', 'sn', 'sd', 'si', 'sk', 'sl', 'so', 'st', 'su', 'sw', 'ss', 'sv', 'tg', 'ta', 'tt', 'te', 'bo', 'ti', 'to', 'ts', 'tn', 'tum', 'tk', 'ur', 'ug', 'uz', 've', 'war', 'cy', 'fy', 'wo', 'xh', 'yi', 'yo', 'zu']
+2025-06-13 22:57:25,373 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 22:57:25] "GET /info?url=https://www.youtube.com/watch?v%3DBYS-qeO2zbo HTTP/1.1" 200 -
+2025-06-13 22:57:41,528 - __main__ - INFO - 收到【字幕】下载请求 - URL: https://www.youtube.com/watch?v=BYS-qeO2zbo, Subtitle: en
+2025-06-13 22:57:46,569 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 22:57:46] "GET /download_subs?url=https://www.youtube.com/watch?v%3DBYS-qeO2zbo&sub_lang=en HTTP/1.1" 200 -
+2025-06-13 22:57:51,365 - __main__ - INFO - 智能检测到实际生成的文件: C:\Users\WINDOWS\Desktop\The End of the Long Bond Era.en.srt.en.vtt
+2025-06-13 22:57:51,365 - __main__ - INFO - 已成功重命名为: C:\Users\WINDOWS\Desktop\The End of the Long Bond Era.en.srt
+2025-06-13 22:57:51,365 - __main__ - INFO - 下载完成: The End of the Long Bond Era.en.srt
+2025-06-13 23:03:37,757 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-13 23:03:39,035 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-13 23:03:39,035 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-13 23:03:41,741 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:03:41] "GET / HTTP/1.1" 200 -
+2025-06-13 23:03:48,615 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=BYS-qeO2zbo
+2025-06-13 23:03:53,687 - __main__ - ERROR - 获取信息时出错: 获取信息失败: ERROR: [youtube] BYS-qeO2zbo: Sign in to confirm youre not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 168, in get_video_info_and_subs
+    if process.returncode != 0: raise Exception(f"获取信息失败: {process.stderr}")
+Exception: 获取信息失败: ERROR: [youtube] BYS-qeO2zbo: Sign in to confirm youre not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+
+2025-06-13 23:03:53,687 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:03:53] "[35m[1mGET /info?url=https://www.youtube.com/watch?v%3DBYS-qeO2zbo HTTP/1.1[0m" 500 -
+2025-06-13 23:04:07,488 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:04:07] "GET / HTTP/1.1" 200 -
+2025-06-13 23:04:12,054 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=BYS-qeO2zbo
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到手动上传的字幕: en
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: aa
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: ab
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: af
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: ak
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: am
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: ar
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: as
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: ay
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: az
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: ba
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: be
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: bg
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: bho
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: bn
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: bo
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: br
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: bs
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: ca
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: ceb
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: co
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: crs
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: cs
+2025-06-13 23:04:19,545 - __main__ - INFO - 找到原始自动生成的字幕: cy
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: da
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: de
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: dv
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: dz
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: ee
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: el
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: eo
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: es
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: et
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: eu
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: fa
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: fi
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: fil
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: fj
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: fo
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: fr
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: fy
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: ga
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: gaa
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: gd
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: gl
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: gn
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: gu
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: gv
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: ha
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: haw
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: hi
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: hmn
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: hr
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: ht
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: hu
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: hy
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: id
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: ig
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: is
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: it
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: iu
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: iw
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: ja
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: jv
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: ka
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: kha
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: kk
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: kl
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: km
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: kn
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: ko
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: kri
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: ku
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: ky
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: la
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: lb
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: lg
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: ln
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: lo
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: lt
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: lua
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: luo
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: lv
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: mfe
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: mg
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: mi
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: mk
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: ml
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: mn
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: mr
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: ms
+2025-06-13 23:04:19,548 - __main__ - INFO - 找到原始自动生成的字幕: mt
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: my
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: ne
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: new
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: nl
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: no
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: nso
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: ny
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: oc
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: om
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: or
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: os
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: pa
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: pam
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: pl
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: ps
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: pt
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: qu
+2025-06-13 23:04:19,553 - __main__ - INFO - 找到原始自动生成的字幕: rn
+2025-06-13 23:04:19,554 - __main__ - INFO - 找到原始自动生成的字幕: ro
+2025-06-13 23:04:19,554 - __main__ - INFO - 找到原始自动生成的字幕: ru
+2025-06-13 23:04:19,554 - __main__ - INFO - 找到原始自动生成的字幕: rw
+2025-06-13 23:04:19,554 - __main__ - INFO - 找到原始自动生成的字幕: sa
+2025-06-13 23:04:19,554 - __main__ - INFO - 找到原始自动生成的字幕: sd
+2025-06-13 23:04:19,554 - __main__ - INFO - 找到原始自动生成的字幕: sg
+2025-06-13 23:04:19,554 - __main__ - INFO - 找到原始自动生成的字幕: si
+2025-06-13 23:04:19,554 - __main__ - INFO - 找到原始自动生成的字幕: sk
+2025-06-13 23:04:19,554 - __main__ - INFO - 找到原始自动生成的字幕: sl
+2025-06-13 23:04:19,554 - __main__ - INFO - 找到原始自动生成的字幕: sm
+2025-06-13 23:04:19,554 - __main__ - INFO - 找到原始自动生成的字幕: sn
+2025-06-13 23:04:19,554 - __main__ - INFO - 找到原始自动生成的字幕: so
+2025-06-13 23:04:19,554 - __main__ - INFO - 找到原始自动生成的字幕: sq
+2025-06-13 23:04:19,554 - __main__ - INFO - 找到原始自动生成的字幕: sr
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: ss
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: st
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: su
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: sv
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: sw
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: ta
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: te
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: tg
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: th
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: ti
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: tk
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: tn
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: to
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: tr
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: ts
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: tt
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: tum
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: ug
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: uk
+2025-06-13 23:04:19,555 - __main__ - INFO - 找到原始自动生成的字幕: ur
+2025-06-13 23:04:19,556 - __main__ - INFO - 找到原始自动生成的字幕: uz
+2025-06-13 23:04:19,556 - __main__ - INFO - 找到原始自动生成的字幕: ve
+2025-06-13 23:04:19,556 - __main__ - INFO - 找到原始自动生成的字幕: vi
+2025-06-13 23:04:19,556 - __main__ - INFO - 找到原始自动生成的字幕: war
+2025-06-13 23:04:19,556 - __main__ - INFO - 找到原始自动生成的字幕: wo
+2025-06-13 23:04:19,556 - __main__ - INFO - 找到原始自动生成的字幕: xh
+2025-06-13 23:04:19,556 - __main__ - INFO - 找到原始自动生成的字幕: yi
+2025-06-13 23:04:19,556 - __main__ - INFO - 找到原始自动生成的字幕: yo
+2025-06-13 23:04:19,556 - __main__ - INFO - 找到原始自动生成的字幕: zu
+2025-06-13 23:04:19,557 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:04:19] "GET /info?url=https://www.youtube.com/watch?v%3DBYS-qeO2zbo HTTP/1.1" 200 -
+2025-06-13 23:04:31,028 - __main__ - INFO - 收到【字幕】下载请求 - URL: https://www.youtube.com/watch?v=BYS-qeO2zbo, Subtitle: en
+2025-06-13 23:04:37,699 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:04:37] "GET /download_subs?url=https://www.youtube.com/watch?v%3DBYS-qeO2zbo&sub_lang=en HTTP/1.1" 200 -
+2025-06-13 23:04:44,267 - __main__ - INFO - 下载完成: The End of the Long Bond Era.en.en.srt
+2025-06-13 23:14:25,717 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-13 23:14:27,010 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-13 23:14:27,010 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-13 23:14:29,362 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:14:29] "GET / HTTP/1.1" 200 -
+2025-06-13 23:15:00,984 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=BYS-qeO2zbo
+2025-06-13 23:15:08,773 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:15:08] "GET /info?url=https://www.youtube.com/watch?v%3DBYS-qeO2zbo HTTP/1.1" 200 -
+2025-06-13 23:15:53,648 - __main__ - INFO - 创建临时目录: C:\Users\WINDOWS\AppData\Local\Temp\tmp96yp08f_
+2025-06-13 23:15:53,648 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:15:53] "GET /download_bilingual_subs?url=https://www.youtube.com/watch?v%3DBYS-qeO2zbo&lang1=en&lang2=zu HTTP/1.1" 200 -
+2025-06-13 23:15:59,656 - __main__ - INFO - 正在下载语言 'en' 的字幕至: C:\Users\WINDOWS\AppData\Local\Temp\tmp96yp08f_\sub1
+2025-06-13 23:16:00,566 - __main__ - ERROR - 处理双语字幕时出错: Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 207, in generate
+    sub1_path = _download_single_sub(url, lang1, temp_sub1_base)
+  File "D:\Projects\X vedio downloader\app.py", line 134, in _download_single_sub
+    raise RuntimeError(f"下载字幕 {lang} 失败: {process.stderr}")
+RuntimeError: 下载字幕 en 失败: 
+Usage: yt-dlp.exe [OPTIONS] URL [URL...]
+
+yt-dlp.exe: error: You must provide at least one URL.
+Type yt-dlp --help to see a list of all options.
+
+
+2025-06-13 23:16:00,566 - __main__ - INFO - 已删除临时目录: C:\Users\WINDOWS\AppData\Local\Temp\tmp96yp08f_
+2025-06-13 23:18:59,050 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-13 23:19:00,327 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-13 23:19:00,327 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-13 23:19:02,821 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:19:02] "GET / HTTP/1.1" 200 -
+2025-06-13 23:19:09,046 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=BYS-qeO2zbo
+2025-06-13 23:19:14,868 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:19:14] "GET /info?url=https://www.youtube.com/watch?v%3DBYS-qeO2zbo HTTP/1.1" 200 -
+2025-06-13 23:19:48,159 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:19:48] "GET /download_video?url=https://www.youtube.com/watch?v%3DBYS-qeO2zbo&sub_lang=en HTTP/1.1" 200 -
+2025-06-13 23:23:39,106 - __main__ - INFO - 创建临时目录: C:\Users\WINDOWS\AppData\Local\Temp\tmprlgb5wjs
+2025-06-13 23:23:39,106 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:23:39] "GET /download_subs?url=https://www.youtube.com/watch?v%3DBYS-qeO2zbo&sub_lang=en HTTP/1.1" 200 -
+2025-06-13 23:23:46,429 - __main__ - ERROR - 处理字幕时出错: Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 203, in generate
+    raise RuntimeError(f"下载字幕失败: {process.stderr}")
+RuntimeError: 下载字幕失败: 
+Usage: yt-dlp.exe [OPTIONS] URL [URL...]
+
+yt-dlp.exe: error: You must provide at least one URL.
+Type yt-dlp --help to see a list of all options.
+
+
+2025-06-13 23:23:46,431 - __main__ - INFO - 已删除临时目录: C:\Users\WINDOWS\AppData\Local\Temp\tmprlgb5wjs
+2025-06-13 23:27:37,585 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-13 23:27:38,858 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-13 23:27:38,858 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-13 23:27:41,286 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:27:41] "GET / HTTP/1.1" 200 -
+2025-06-13 23:28:20,854 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:28:20] "[35m[1mGET /info?url=https://www.youtube.com/watch?v%3DBYS-qeO2zbo HTTP/1.1[0m" 500 -
+2025-06-13 23:32:41,942 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-13 23:32:43,240 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-13 23:32:43,241 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-13 23:32:45,699 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:32:45] "GET / HTTP/1.1" 200 -
+2025-06-13 23:32:52,357 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=BYS-qeO2zbo
+2025-06-13 23:32:56,299 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:32:56] "GET /info?url=https://www.youtube.com/watch?v%3DBYS-qeO2zbo HTTP/1.1" 200 -
+2025-06-13 23:33:06,791 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:33:06] "GET /download_subs?url=https://www.youtube.com/watch?v%3DBYS-qeO2zbo&sub_lang=en HTTP/1.1" 200 -
+2025-06-13 23:33:14,526 - __main__ - INFO - 开始对字幕文件进行格式化: C:\Users\WINDOWS\Desktop\The End of the Long Bond Era.en.srt
+2025-06-13 23:33:14,528 - __main__ - INFO - 字幕格式化完成，已覆盖保存: C:\Users\WINDOWS\Desktop\The End of the Long Bond Era.en.srt
+2025-06-13 23:39:54,091 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-13 23:39:55,378 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-13 23:39:55,379 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-13 23:39:58,344 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:39:58] "GET / HTTP/1.1" 200 -
+2025-06-13 23:40:23,127 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:40:23] "GET /info?url=https://www.youtube.com/watch?v%3DBUH4x7KarbM HTTP/1.1" 200 -
+2025-06-13 23:40:38,459 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:40:38] "GET /download_subs?url=https://www.youtube.com/watch?v%3DBUH4x7KarbM&sub_lang=en HTTP/1.1" 200 -
+2025-06-13 23:44:02,995 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-13 23:44:04,268 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-13 23:44:04,269 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-13 23:44:17,991 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:44:17] "GET / HTTP/1.1" 200 -
+2025-06-13 23:44:27,941 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:44:27] "GET /info?url=https://www.youtube.com/watch?v%3DBUH4x7KarbM HTTP/1.1" 200 -
+2025-06-13 23:44:40,946 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:44:40] "GET /download_subs?url=https://www.youtube.com/watch?v%3DBUH4x7KarbM&sub_lang=en HTTP/1.1" 200 -
+2025-06-13 23:44:45,982 - __main__ - INFO - 开始对字幕文件进行格式化: C:\Users\WINDOWS\Desktop\Trump’s Military Parade_ Cost, Equipment and What to Expect _ WSJ.en.srt
+2025-06-13 23:44:45,983 - __main__ - INFO - 字幕格式化完成，已覆盖保存: C:\Users\WINDOWS\Desktop\Trump’s Military Parade_ Cost, Equipment and What to Expect _ WSJ.en.srt
+2025-06-13 23:54:24,642 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:54:24] "GET /info?url=https://www.bilibili.com/video/BV1DyTgzmEmz/?spm_id_from%3D333.1007.tianma.1-3-3.click HTTP/1.1" 200 -
+2025-06-13 23:54:32,942 - __main__ - INFO - 检测到Aria2c，启用多线程下载。
+2025-06-13 23:54:34,479 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:54:34] "GET /download_video?url=https://www.bilibili.com/video/BV1DyTgzmEmz/?spm_id_from%3D333.1007.tianma.1-3-3.click HTTP/1.1" 200 -
+2025-06-13 23:54:35,109 - __main__ - ERROR - 下载视频时出错: Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 167, in generate
+    yield from stream_process_output(process, "视频下载中")
+  File "D:\Projects\X vedio downloader\app.py", line 108, in stream_process_output
+    raise RuntimeError(f"{message_prefix}失败，返回码: {process.returncode}")
+RuntimeError: 视频下载中失败，返回码: 1
+
+2025-06-13 23:57:23,255 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-13 23:57:24,543 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-13 23:57:24,543 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-13 23:57:26,853 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:57:26] "GET / HTTP/1.1" 200 -
+2025-06-13 23:57:36,770 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:57:36] "GET /info?url=https://www.bilibili.com/video/BV1DyTgzmEmz/?spm_id_from%3D333.1007.tianma.1-3-3.click HTTP/1.1" 200 -
+2025-06-13 23:57:42,286 - __main__ - INFO - 检测到Aria2c，启用多线程下载。
+2025-06-13 23:57:43,804 - werkzeug - INFO - 192.168.2.247 - - [13/Jun/2025 23:57:43] "GET /download_video?url=https://www.bilibili.com/video/BV1DyTgzmEmz/?spm_id_from%3D333.1007.tianma.1-3-3.click HTTP/1.1" 200 -
+2025-06-14 00:00:13,212 - werkzeug - INFO - 192.168.2.247 - - [14/Jun/2025 00:00:13] "GET /info?url=https://www.bilibili.com/bangumi/play/ep835824?from_spmid%3D666.8.recommend.0 HTTP/1.1" 200 -
+2025-06-14 00:00:22,912 - __main__ - INFO - 检测到Aria2c，启用多线程下载。
+2025-06-14 00:00:24,080 - werkzeug - INFO - 192.168.2.247 - - [14/Jun/2025 00:00:24] "GET /download_video?url=https://www.bilibili.com/bangumi/play/ep835824?from_spmid%3D666.8.recommend.0 HTTP/1.1" 200 -

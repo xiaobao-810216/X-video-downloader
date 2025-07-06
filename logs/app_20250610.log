@@ -1,0 +1,116 @@
+2025-06-10 22:52:19,129 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:52:20,426 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-10 22:52:20,426 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-10 22:52:20,428 - werkzeug - INFO -  * Restarting with stat
+2025-06-10 22:52:20,585 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:52:20,595 - werkzeug - WARNING -  * Debugger is active!
+2025-06-10 22:52:20,597 - werkzeug - INFO -  * Debugger PIN: 116-752-517
+2025-06-10 22:52:23,757 - werkzeug - INFO - 192.168.2.247 - - [10/Jun/2025 22:52:23] "GET / HTTP/1.1" 200 -
+2025-06-10 22:52:24,794 - werkzeug - INFO - 192.168.2.247 - - [10/Jun/2025 22:52:24] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-10 22:52:30,969 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=CRraHg4Ks_g
+2025-06-10 22:52:30,969 - werkzeug - INFO - 192.168.2.247 - - [10/Jun/2025 22:52:30] "GET /download?url=https://www.youtube.com/watch?v%3DCRraHg4Ks_g HTTP/1.1" 200 -
+2025-06-10 22:52:30,970 - __main__ - INFO - 找到cookies文件，将使用: D:\Projects\X vedio downloader\cookies.txt
+2025-06-10 22:52:37,753 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Demis Hassabis On The Future of Work in the Age of AI.mp4
+2025-06-10 22:52:37,755 - __main__ - INFO - 启用高速下载模式 (Aria2c)
+2025-06-10 22:52:44,310 - __main__ - ERROR - 致命错误: 下载中失败，返回码: 1. 输出: [youtube] Extracting URL: https://www.youtube.com/watch?v=CRraHg4Ks_g
+[youtube] CRraHg4Ks_g: Downloading webpage
+[youtube] CRraHg4Ks_g: Downloading tv client config
+[youtube] CRraHg4Ks_g: Downloading tv player API JSON
+[youtube] CRraHg4Ks_g: Downloading ios player API JSON
+[youtube] CRraHg4Ks_g: Downloading player fc2a56a5-main
+[youtube] CRraHg4Ks_g: Downloading m3u8 information
+ERROR: [youtube] CRraHg4Ks_g: Requested format is not available. Use --list-formats for a list of available formats
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 127, in _perform_download
+    yield from stream_process_output(process, "下载中")
+  File "D:\Projects\X vedio downloader\app.py", line 73, in stream_process_output
+    raise RuntimeError(f"{message_prefix}失败，返回码: {process.returncode}. 输出: {full_output[-500:]}")
+RuntimeError: 下载中失败，返回码: 1. 输出: [youtube] Extracting URL: https://www.youtube.com/watch?v=CRraHg4Ks_g
+[youtube] CRraHg4Ks_g: Downloading webpage
+[youtube] CRraHg4Ks_g: Downloading tv client config
+[youtube] CRraHg4Ks_g: Downloading tv player API JSON
+[youtube] CRraHg4Ks_g: Downloading ios player API JSON
+[youtube] CRraHg4Ks_g: Downloading player fc2a56a5-main
+[youtube] CRraHg4Ks_g: Downloading m3u8 information
+ERROR: [youtube] CRraHg4Ks_g: Requested format is not available. Use --list-formats for a list of available formats
+
+2025-06-10 22:55:12,391 - werkzeug - INFO -  * Detected change in 'D:\\Projects\\X vedio downloader\\app.py', reloading
+2025-06-10 22:55:12,411 - werkzeug - INFO -  * Restarting with stat
+2025-06-10 22:55:12,569 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:55:12,580 - werkzeug - WARNING -  * Debugger is active!
+2025-06-10 22:55:12,581 - werkzeug - INFO -  * Debugger PIN: 116-752-517
+2025-06-10 22:55:17,601 - werkzeug - INFO -  * Detected change in 'D:\\Projects\\X vedio downloader\\app.py', reloading
+2025-06-10 22:55:17,620 - werkzeug - INFO -  * Restarting with stat
+2025-06-10 22:55:17,771 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:55:17,781 - werkzeug - WARNING -  * Debugger is active!
+2025-06-10 22:55:17,783 - werkzeug - INFO -  * Debugger PIN: 116-752-517
+2025-06-10 22:55:21,189 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:55:21,190 - werkzeug - WARNING -  * Debugger is active!
+2025-06-10 22:55:21,190 - werkzeug - INFO -  * Debugger PIN: 116-752-517
+2025-06-10 22:55:21,237 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:55:22,509 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-10 22:55:22,510 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-10 22:55:22,510 - werkzeug - INFO -  * Restarting with stat
+2025-06-10 22:55:22,666 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:55:22,675 - werkzeug - WARNING -  * Debugger is active!
+2025-06-10 22:55:22,677 - werkzeug - INFO -  * Debugger PIN: 116-752-517
+2025-06-10 22:55:28,703 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:55:28,704 - werkzeug - WARNING -  * Debugger is active!
+2025-06-10 22:55:28,704 - werkzeug - INFO -  * Debugger PIN: 116-752-517
+2025-06-10 22:55:36,028 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:55:37,318 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-10 22:55:37,318 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-10 22:55:37,319 - werkzeug - INFO -  * Restarting with stat
+2025-06-10 22:55:37,474 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:55:37,485 - werkzeug - WARNING -  * Debugger is active!
+2025-06-10 22:55:37,487 - werkzeug - INFO -  * Debugger PIN: 116-752-517
+2025-06-10 22:58:23,541 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:58:23,542 - werkzeug - WARNING -  * Debugger is active!
+2025-06-10 22:58:23,542 - werkzeug - INFO -  * Debugger PIN: 116-752-517
+2025-06-10 22:58:23,565 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:58:24,826 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-10 22:58:24,826 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-10 22:58:24,826 - werkzeug - INFO -  * Restarting with stat
+2025-06-10 22:58:24,973 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:58:24,982 - werkzeug - WARNING -  * Debugger is active!
+2025-06-10 22:58:24,984 - werkzeug - INFO -  * Debugger PIN: 116-752-517
+2025-06-10 22:58:46,079 - werkzeug - INFO -  * Detected change in 'D:\\Projects\\X vedio downloader\\app.py', reloading
+2025-06-10 22:58:46,101 - werkzeug - INFO -  * Restarting with stat
+2025-06-10 22:58:46,251 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:58:46,261 - werkzeug - WARNING -  * Debugger is active!
+2025-06-10 22:58:46,263 - werkzeug - INFO -  * Debugger PIN: 116-752-517
+2025-06-10 22:59:24,366 - werkzeug - INFO -  * Detected change in 'D:\\Projects\\X vedio downloader\\app.py', reloading
+2025-06-10 22:59:24,388 - werkzeug - INFO -  * Restarting with stat
+2025-06-10 22:59:24,541 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 22:59:24,552 - werkzeug - WARNING -  * Debugger is active!
+2025-06-10 22:59:24,554 - werkzeug - INFO -  * Debugger PIN: 116-752-517
+2025-06-10 23:03:46,483 - werkzeug - INFO -  * Detected change in 'D:\\Projects\\X vedio downloader\\app.py', reloading
+2025-06-10 23:03:46,503 - werkzeug - INFO -  * Restarting with stat
+2025-06-10 23:03:46,655 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 23:03:46,665 - werkzeug - WARNING -  * Debugger is active!
+2025-06-10 23:03:46,667 - werkzeug - INFO -  * Debugger PIN: 116-752-517
+2025-06-10 23:04:01,809 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-10 23:04:03,088 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-10 23:04:03,089 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-10 23:04:10,018 - werkzeug - INFO - 192.168.2.247 - - [10/Jun/2025 23:04:10] "GET / HTTP/1.1" 200 -
+2025-06-10 23:04:16,282 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=CRraHg4Ks_g
+2025-06-10 23:04:16,283 - werkzeug - INFO - 192.168.2.247 - - [10/Jun/2025 23:04:16] "GET /download?url=https://www.youtube.com/watch?v%3DCRraHg4Ks_g HTTP/1.1" 200 -
+2025-06-10 23:04:16,283 - __main__ - INFO - 找到cookies文件，将使用: D:\Projects\X vedio downloader\cookies.txt
+2025-06-10 23:04:24,682 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Demis Hassabis On The Future of Work in the Age of AI.mp4
+2025-06-10 23:04:24,683 - __main__ - INFO - 启用高速下载模式 (Aria2c)
+2025-06-10 23:12:06,410 - __main__ - INFO - 下载完成: Demis Hassabis On The Future of Work in the Age of AI.mp4

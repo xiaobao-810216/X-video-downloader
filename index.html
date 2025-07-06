@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>流光下载器 - X Video Downloader</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            color: #666;
+        }
+        .download-section {
+            text-align: center;
+            padding: 30px 0;
+        }
+        .download-button {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .download-button:hover {
+            background-color: #0056b3;
+        }
+        .version-info {
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 10px;
+        }
+        .features, .usage, .donate-section {
+            margin-top: 30px;
+        }
+        h2 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        code {
+            background-color: #eee;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .donate-grid {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .donate-item img {
+            width: 200px;
+            height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 0.9em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>流光下载器</h1>
+            <p>一个简单易用的视频下载工具 (X Video Downloader)</p>
+        </div>
+
+        <div class="download-section">
+            <a href="./release/流光下载器_v20250706.zip" class="download-button" download>下载最新版</a>
+            <p class="version-info">版本: v20250706 | 需要 Windows (64位)</p>
+        </div>
+
+        <div class="features">
+            <h2>功能亮点</h2>
+            <ul>
+                <li>支持主流视频网站</li>
+                <li>简洁的网页操作界面，无需复杂配置</li>
+                <li>支持高清视频下载</li>
+                <li>自动处理视频和字幕</li>
+            </ul>
+        </div>
+
+        <div class="usage">
+            <h2>使用说明</h2>
+            <ol>
+                <li>下载上方的 <code>.zip</code> 压缩包并解压。</li>
+                <li>双击运行 <code>流光下载器.exe</code>。</li>
+                <li>程序会自动在你的浏览器中打开一个网页。</li>
+                <li>在网页中粘贴视频链接即可开始下载！</li>
+            </ol>
+            <p><strong>注意:</strong> 请保持文件夹内所有文件完整，不要单独移动 <code>.exe</code> 文件。</p>
+        </div>
+
+        <div class="donate-section">
+            <h2>支持开发者</h2>
+            <p>如果这个小工具对你有帮助，可以考虑请我喝杯咖啡！你的支持是我持续更新的最大动力。</p>
+            <div class="donate-grid">
+                <div class="donate-item">
+                    <img src="donate_qr.png" alt="微信收款码">
+                    <p>微信扫码</p>
+                </div>
+                <div class="donate-item">
+                    <img src="https://via.placeholder.com/200x200.png?text=支付宝二维码" alt="支付宝收款码">
+                    <p>支付宝扫码 (占位)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>项目托管于 <a href="https://github.com/xiaobao-810216/Xvideodownloader" target="_blank">GitHub</a></p>
+        </div>
+    </div>
+</body>
+</html>

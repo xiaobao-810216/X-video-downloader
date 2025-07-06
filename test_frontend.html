@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>前端测试页面</title>
+    <meta charset="utf-8">
+    <style>
+        body { margin: 20px; background: #15202b; color: #E7E9EA; font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; }
+        #qualityContainer { 
+            display: block !important; 
+            margin: 20px 0; 
+            padding: 15px; 
+            background: #192734; 
+            border-radius: 8px; 
+            border: 2px solid #1d9bf0;
+        }
+        select { 
+            width: 100%; 
+            padding: 10px; 
+            background: #15202b; 
+            color: #E7E9EA; 
+            border: 1px solid #38444d; 
+            border-radius: 5px; 
+        }
+        label { color: #8899a6; margin-bottom: 10px; display: block; }
+        #status { margin: 10px 0; padding: 10px; background: #0f1419; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 前端测试页面</h1>
+        
+        <div id="qualityContainer">
+            <label for="qualitySelect">下载模式测试:</label>
+            <select id="qualitySelect">
+                <option value="best">🎯 高质量模式 (1080p，慢)</option>
+                <option value="fast">⚡ 快速模式 (720p，快)</option>
+            </select>
+        </div>
+        
+        <div id="status">状态: 页面已加载</div>
+        <button onclick="testMode()">测试模式切换</button>
+    </div>
+
+    <script>
+        const qualitySelect = document.getElementById('qualitySelect');
+        const status = document.getElementById('status');
+        
+        console.log('测试页面已加载');
+        console.log('qualitySelect:', qualitySelect);
+        console.log('qualityContainer:', document.getElementById('qualityContainer'));
+        
+        function testMode() {
+            const mode = qualitySelect.value === 'fast' ? '⚡ 快速模式' : '🎯 高质量模式';
+            status.textContent = `当前选择: ${mode}`;
+            console.log('模式切换:', mode);
+        }
+        
+        qualitySelect.addEventListener('change', testMode);
+        
+        // 初始显示
+        testMode();
+    </script>
+</body>
+</html>

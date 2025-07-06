@@ -1,288 +1,468 @@
-import logging
-import os
-import sys
-import subprocess
-import json
-import traceback
-import re
-import yt_dlp
-from flask import Flask, request, jsonify, render_template
-from flask import send_from_directory, Response
+import logging, os, sys, subprocess, json, traceback, re, datetime, shutil, uuid, queue, threading, time
+from flask import Flask, request, Response, render_template, jsonify
+import webbrowser
+from threading import Timer
 
-# 尝试导入 flask_cors，如果失败则给出友好提示
+# --- 主应用代码 ---
 try:
     from flask_cors import CORS
 except ImportError:
-    print("未找到 flask_cors 模块。请运行 'pip install flask-cors' 安装。")
-    CORS = None  # 提供一个备选方案
+    CORS = None
 
-# 设置更详细的日志
-logging.basicConfig(
-    level=logging.DEBUG,  # 改为 DEBUG 级别
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(),  # 输出到控制台
-        logging.FileHandler('app.log', encoding='utf-8')  # 同时写入日志文件
-    ]
-)
-logger = logging.getLogger(__name__)
+# 定义一个全局的、只在Windows上生效的创建标志，用于隐藏子进程窗口
+CREATE_NO_WINDOW = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
 
-# 设置 aria2c 路径
-ARIA2C_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'aria2', 'aria2-1.36.0-win-64bit-build1', 'aria2c.exe')
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
-# 设置代理，如果需要的话
-PROXY = None
+# --- 基本配置和日志 ---
+COOKIES_FILE = resource_path("cookies.txt")
+YTDLP_PATH = resource_path("yt-dlp.exe")
+ARIA2C_PATH = resource_path(os.path.join("aria2", "aria2-1.36.0-win-64bit-build1", "aria2c.exe"))
+FFMPEG_BUNDLED_PATH = resource_path(os.path.join("ffmpeg", "bin", "ffmpeg.exe"))
+FFMPEG_SYSTEM_PATH = "ffmpeg.exe"
+DOWNLOAD_DIR = os.path.join(os.path.expanduser('~'), 'Desktop')
+os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
-app = Flask(__name__, static_folder='static', static_url_path='/static')
-if CORS:
-    CORS(app)  # 启用 CORS
+# --- 任务队列和状态管�� ---
+download_queue = queue.Queue()
+tasks = {}
+tasks_lock = threading.Lock()
+
+# --- 缓存 ---
+_ffmpeg_path_cache = None
+video_info_cache = {}
+
+def get_ffmpeg_path():
+    global _ffmpeg_path_cache
+    if _ffmpeg_path_cache is not None: return _ffmpeg_path_cache
+    if os.path.exists(FFMPEG_BUNDLED_PATH):
+        try:
+            subprocess.run([FFMPEG_BUNDLED_PATH, '-version'], capture_output=True, check=True, creationflags=CREATE_NO_WINDOW, timeout=5)
+            logger.info("使用打包的 FFmpeg")
+            _ffmpeg_path_cache = FFMPEG_BUNDLED_PATH
+            return _ffmpeg_path_cache
+        except: logger.warning("打包的 FFmpeg 不可用")
+    try:
+        subprocess.run([FFMPEG_SYSTEM_PATH, '-version'], capture_output=True, check=True, creationflags=CREATE_NO_WINDOW, timeout=5)
+        logger.info("使用系统 FFmpeg")
+        _ffmpeg_path_cache = FFMPEG_SYSTEM_PATH
+        return _ffmpeg_path_cache
+    except: logger.warning("系统 FFmpeg 不可用")
+    _ffmpeg_path_cache = False
+    return None
+
+LANGUAGE_CODES = {'en': '英语', 'zh-CN': '简体中文', 'zh-Hant': '繁体中文', 'ja': '日语', 'ko': '韩语', 'de': '德语', 'fr': '法语', 'es': '西班牙语', 'ru': '俄语'}
+
+def setup_logging():
+    log_dir = os.path.join(DOWNLOAD_DIR, "流光下载器日志")
+    os.makedirs(log_dir, exist_ok=True)
+    log_format = '%(asctime)s - %(levelname)s - %(message)s'
+    root_logger = logging.getLogger()
+    if root_logger.hasHandlers(): root_logger.handlers.clear()
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(logging.Formatter(log_format))
+    file_handler = logging.FileHandler(os.path.join(log_dir, f'app_{datetime.datetime.now().strftime("%Y%m%d")}.log'), encoding='utf-8')
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(logging.Formatter(log_format))
+    root_logger.setLevel(logging.DEBUG)
+    root_logger.addHandler(console_handler)
+    root_logger.addHandler(file_handler)
+    return logging.getLogger(__name__)
+
+logger = setup_logging()
+app = Flask(__name__, template_folder=resource_path('templates'), static_folder=resource_path('static'))
+if CORS: CORS(app)
+
+def get_video_info(url, is_playlist=False):
+    """获取视频信息，添加超时和缓存机制。为播放列表单独处理。"""
+    # 对播放列表禁用缓存，因为内容可能经常变化
+    if not is_playlist:
+        cache_key = url
+        if cache_key in video_info_cache:
+            logger.info("使用缓存的视频信息")
+            return video_info_cache[cache_key]
+
+    # 基础命令
+    cmd = [YTDLP_PATH, '--no-warnings', '--dump-json', '--no-check-certificate',
+           '--socket-timeout', '15', '--extractor-retries', '3']
+
+    # 为播放列表使用 --flat-playlist 提高效率
+    if is_playlist:
+        cmd.extend(['--flat-playlist'])
+    else:
+        # 单个视频不处理播放列表，加快速度
+        cmd.extend(['--no-playlist'])
+
+    cmd.append(url)
+
+    # 添加 Cookies
+    if os.path.exists(COOKIES_FILE):
+        cmd.extend(['--cookies', COOKIES_FILE])
+    else:
+        try:
+            cmd.extend(['--cookies-from-browser', 'chrome'])
+        except Exception:
+            logger.warning("无法从浏览器自动提取 cookies")
+
+    try:
+        process = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8',
+                               errors='ignore', creationflags=CREATE_NO_WINDOW, timeout=30)
+
+        if process.returncode != 0:
+            raise Exception(f"获取视频信息失败: {process.stderr}")
+
+        lines = process.stdout.strip().split('\n')
+        
+        # 检查是否是播放列表的响应
+        first_line_data = json.loads(lines[0])
+        is_playlist_response = first_line_data.get('_type') == 'playlist' or 'playlist' in first_line_data
+
+        if is_playlist_response:
+            # 如果是播放列表，我们已经用了 --flat-playlist，直接处理
+            info = [json.loads(line) for line in lines]
+            playlist_title = info[0].get('playlist_title') or info[0].get('title', '未知播放列表')
+            for entry in info:
+                entry['is_playlist'] = True
+                entry['playlist_title'] = playlist_title
+            return info
+        else:
+            # 单个视频
+            info = json.loads(lines[0])
+            if not is_playlist:
+                if len(video_info_cache) >= 20:
+                    video_info_cache.pop(next(iter(video_info_cache)))
+                video_info_cache[url] = info
+            return info
+
+    except subprocess.TimeoutExpired:
+        raise Exception("获取视频信息超时")
+    except json.JSONDecodeError:
+        raise Exception("视频信息解析失败")
+
+def download_worker():
+    """后台下载工作线程，现在能处理视频和字幕"""
+    while True:
+        task_id = download_queue.get()
+        if task_id is None: break
+
+        with tasks_lock:
+            tasks[task_id]['status'] = 'downloading'
+            task = tasks[task_id]
+        
+        try:
+            if task['type'] == 'video':
+                execute_video_download(task_id, task)
+            elif task['type'] == 'subtitle':
+                execute_subtitle_download(task_id, task)
+            else:
+                raise ValueError(f"未知的任务类型: {task['type']}")
+
+        except Exception as e:
+            logger.error(f"任务 {task_id} 失败: {traceback.format_exc()}")
+            with tasks_lock:
+                if task_id in tasks:
+                    tasks[task_id]['status'] = 'error'
+                    tasks[task_id]['error_message'] = str(e)
+        
+        download_queue.task_done()
+
+def execute_video_download(task_id, task):
+    """执行视频下载"""
+    url = task['url']
+    if not url: raise ValueError("任务URL为空")
+
+    title = re.sub(r'[\/*?:"><>|]', '_', task.get('title', 'video_file'))
+    output_path = os.path.join(DOWNLOAD_DIR, f"{title[:150]}.mp4")
+    
+    format_string = 'bestvideo[height<=1080]+bestaudio[ext=m4a]/best' if task['quality'] == 'best' else 'best[height<=720]/best'
+    
+    dl_cmd = [YTDLP_PATH, '--no-warnings', '--force-overwrites', '--no-check-certificate', 
+             '--socket-timeout', '12', '--retries', '3', '--fragment-retries', '5',
+             '--no-part', '--concurrent-fragments', '4', '--no-playlist',
+             '-f', format_string, '--merge-output-format', 'mp4', '-o', output_path]
+
+    if os.path.exists(COOKIES_FILE): dl_cmd.extend(['--cookies', COOKIES_FILE])
+    else: dl_cmd.extend(['--cookies-from-browser', 'chrome'])
+    
+    ffmpeg_path = get_ffmpeg_path()
+    if ffmpeg_path: dl_cmd.extend(['--ffmpeg-location', ffmpeg_path])
+    if os.path.exists(ARIA2C_PATH):
+        dl_cmd.extend(['--downloader', 'aria2c', '--downloader-args', "max-connection-per-server=16,min-split-size=1M"])
+    
+    dl_cmd.append(url)
+    
+    process = subprocess.Popen(dl_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, 
+                             text=True, encoding='utf-8', errors='ignore', bufsize=1, 
+                             creationflags=CREATE_NO_WINDOW)
+
+    for line in iter(process.stdout.readline, ''):
+        percent = -1
+        match_aria = re.search(r'\((\d{1,3})%\)', line)
+        if match_aria: percent = int(match_aria.group(1))
+        else:
+            match_ydl = re.search(r'\[download\]\s+([\d\.]+)\s*%', line)
+            if match_ydl: percent = float(match_ydl.group(1))
+        
+        with tasks_lock:
+            if task_id in tasks:
+                if percent >= 0: tasks[task_id]['progress'] = percent
+                if '[Merger]' in line: tasks[task_id]['status'] = 'merging'
+
+    process.wait()
+    if process.returncode == 0 and os.path.exists(output_path):
+        with tasks_lock:
+            if task_id in tasks:
+                tasks[task_id]['status'] = 'finished'
+                tasks[task_id]['progress'] = 100
+    else:
+        error_output = process.stderr.read() if process.stderr else "未知错误"
+        raise RuntimeError(f"下载失败: {error_output}")
+
+def execute_subtitle_download(task_id, task):
+    """执行字幕下载和处理"""
+    url = task['url']
+    lang = task['sub_lang']
+    if not url or not lang: raise ValueError("URL或字幕语言为空")
+
+    title = re.sub(r'[\/*?:"><>|]', '_', task.get('title', 'video_file').replace('[字幕] ', ''))
+    output_base = os.path.join(DOWNLOAD_DIR, f"{title[:150]}")
+    
+    with tasks_lock:
+        tasks[task_id]['progress'] = 20
+
+    subtitle_extensions = ('.srt', '.vtt', '.ass')
+    files_before = {f for f in os.listdir(DOWNLOAD_DIR) if f.endswith(subtitle_extensions)}
+
+    dl_cmd = [YTDLP_PATH, '--no-warnings', '--force-overwrites', '--no-check-certificate',
+             '--write-subs', '--sub-langs', lang, '--skip-download',
+             '--convert-subs', 'srt', '-o', output_base]
+    
+    if os.path.exists(COOKIES_FILE): dl_cmd.extend(['--cookies', COOKIES_FILE])
+    else: dl_cmd.extend(['--cookies-from-browser', 'chrome'])
+
+    ffmpeg_path = get_ffmpeg_path()
+    if ffmpeg_path: dl_cmd.extend(['--ffmpeg-location', ffmpeg_path])
+
+    dl_cmd.append(url)
+    
+    process = subprocess.run(dl_cmd, capture_output=True, text=True, encoding='utf-8', errors='ignore', creationflags=CREATE_NO_WINDOW)
+    
+    if process.returncode != 0:
+        raise RuntimeError(f"yt-dlp下载字幕失败: {process.stderr}")
+
+    with tasks_lock:
+        tasks[task_id]['progress'] = 70
+        tasks[task_id]['status'] = 'merging' # 用merging表示正在后处理
+
+    files_after = {f for f in os.listdir(DOWNLOAD_DIR) if f.endswith(subtitle_extensions)}
+    new_files = files_after - files_before
+    
+    if not new_files:
+        raise RuntimeError("找不到下载的字幕文件，请检查yt-dlp的输出")
+
+    # 优先选择SRT
+    srt_files = [f for f in new_files if f.endswith('.srt')]
+    subtitle_file_name = srt_files[0] if srt_files else new_files.pop()
+    subtitle_file_path = os.path.join(DOWNLOAD_DIR, subtitle_file_name)
+
+    # --- 恢复的核心：SRT文件处理 ---
+    try:
+        with open(subtitle_file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        blocks = content.strip().split('\n\n')
+        cleaned_blocks = []
+        for block in blocks:
+            lines = block.strip().split('\n')
+            if len(lines) >= 2:
+                index_line = lines[0]
+                time_line = lines[1]
+                text_lines = [line.strip() for line in lines[2:] if line.strip()]
+                
+                if text_lines:
+                    merged_text = ' '.join(text_lines)
+                    cleaned_block = f"{index_line}\n{time_line}\n{merged_text}"
+                    cleaned_blocks.append(cleaned_block)
+        
+        final_content = '\n\n'.join(cleaned_blocks)
+        with open(subtitle_file_path, 'w', encoding='utf-8') as f:
+            f.write(final_content)
+        logger.info(f"字幕文件 {subtitle_file_name} 已成功处理。")
+    except Exception as e:
+        logger.error(f"处理SRT文件时出错: {e}")
+        raise RuntimeError("字幕文件后处理失败")
+
+    with tasks_lock:
+        if task_id in tasks:
+            tasks[task_id]['status'] = 'finished'
+            tasks[task_id]['progress'] = 100
+
 
 @app.route('/')
 def index():
-    try:
-        return render_template('index.html')
-    except Exception as e:
-        logger.error(f"Error rendering template: {str(e)}")
-        return f"Error: {str(e)}", 500
+    return render_template('index.html')
 
-@app.route('/video_info', methods=['GET', 'POST'])
-def video_info():
-    logger.debug(f"收到视频信息请求，方法: {request.method}")
-    logger.debug(f"请求参数: {request.args}")
-    logger.debug(f"请求表单: {request.form}")
-
+@app.route('/info')
+def video_info_route():
+    url = request.args.get('url')
+    if not url: return jsonify({'error': '缺少URL参数'}), 400
+    
     try:
-        if request.method == 'POST':
-            url = request.form.get('url')
+        # 终极修复 V2：逻辑更清晰
+        # 1. 优先判断是否为播放列表
+        is_playlist = 'list=' in url
+        
+        # 2. 如果是播放列表，强制使用 --flat-playlist
+        if is_playlist:
+            info = get_video_info(url, is_playlist=True)
+            
+            if not isinstance(info, list): # yt-dlp 可能只返回一个 playlist ���型的 json
+                info = info.get('entries', [])
+
+            playlist_title = "未知播放列表"
+            # 尝试从第一个有效的视频条目中获取列表标题
+            if info and info[0] and info[0].get('playlist_title'):
+                playlist_title = info[0].get('playlist_title')
+            
+            videos = [{'id': entry.get('id'), 'url': entry.get('webpage_url', entry.get('url')), 'title': entry.get('title', '未知标题')} for entry in info if entry]
+            return jsonify({'type': 'playlist', 'title': playlist_title, 'videos': videos, 'playlist_url': url})
+
+        # 3. 如果不是播放列表，则作为单个视频处理
         else:
-            url = request.args.get('url')
-        
-        logger.debug(f"解析出的 URL: {url}")
-            
-        if not url:
-            logger.error("未提供视频链接")
-            return jsonify({'error': '请提供视频链接'}), 400
+            info = get_video_info(url, is_playlist=False)
+            if isinstance(info, list): info = info[0] # 防御性编程
 
-        logger.info(f"请求视频信息的 URL: {url}")
-        try:
-            logger.info("开始提取视频 ID...")
-            video_id = extract_video_id(url)
-            if not video_id:
-                logger.error("未能提取视频 ID")
-                logger.error(f"视频链接：{url}")
-                return jsonify({'error': '无效的视频链接'}), 400
-            logger.info(f"成功提取视频 ID: {video_id}")
-            logger.info("开始获取视频信息...")
-            try:
-                # 使用 yt-dlp 获取详细的格式信息
-                ydl_opts = {
-                    'quiet': False,  # 改为 False 以获取更多信息
-                    'no_warnings': False,  # 改为 False 以获取警告信息
-                    'no_color': True,
-                    'extract_flat': False,  # 改为 False 以获取完整信息
-                    'format': 'best'  # 确保获取最佳格式
-                }
-                
-                # 转换 URL 为 Twitter 域名
-                twitter_url = url.replace('x.com', 'twitter.com')
-                
-                try:
-                    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                        logger.debug(f"开始使用 yt-dlp 提取 {twitter_url} 的信息")
-                        info_dict = ydl.extract_info(twitter_url, download=False)
-                        
-                        logger.debug(f"成功获取视频信息字典: {info_dict.keys()}")
-                        
-                        # 处理格式信息
-                        formats = []
-                        if 'formats' in info_dict:
-                            for fmt in info_dict['formats']:
-                                # 只保留视频格式
-                                if fmt.get('vcodec', 'none') != 'none':
-                                    format_info = {
-                                        'format_id': fmt.get('format_id', ''),
-                                        'resolution': f"{fmt.get('width', 0)}x{fmt.get('height', 0)}",
-                                        'ext': fmt.get('ext', 'mp4'),
-                                        'filesize': fmt.get('filesize', 0) or 0,
-                                        'tbr': fmt.get('tbr', 0)  # 总比特率
-                                    }
-                                    formats.append(format_info)
-                        
-                        # 按分辨率排序
-                        formats.sort(key=lambda x: int(x['resolution'].split('x')[1]) if 'x' in x['resolution'] else 0, reverse=True)
-                        
-                        video_data = {
-                            'title': info_dict.get('title', f'Twitter Video {video_id}'),
-                            'formats': formats
-                        }
-                        
-                        logger.info(f"成功获取视频信息: {video_data}")
-                        return jsonify(video_data)
-                
-                except Exception as extract_error:
-                    logger.error(f"yt-dlp 提取信息失败: {str(extract_error)}")
-                    logger.error(f"错误详情: {traceback.format_exc()}")
-                    return jsonify({'error': f'无法获取视频信息: {str(extract_error)}'}), 500
+            title = info.get('title', '未知标题')
+            sub_options = []
+            found_langs = set()
             
-            except Exception as e:
-                logger.error(f"获取视频信息时发生错误: {str(e)}")
-                logger.error(f"错误详情: {traceback.format_exc()}")
-                return jsonify({'error': f'获取视频信息失败: {str(e)}'}), 500
-        except Exception as e:
-            logger.error(f"获取视频信息时发生错误: {str(e)}")
-            logger.error(f"错误详情: {traceback.format_exc()}")
-            return jsonify({'error': f'获取视频信息失败: {str(e)}'}), 500
-    
+            manual_subs = info.get('subtitles', {})
+            auto_captions = info.get('automatic_captions', {})
+            
+            for lang_code in sorted(manual_subs.keys()):
+                if lang_code not in found_langs:
+                    display_name = LANGUAGE_CODES.get(lang_code, lang_code)
+                    sub_options.append({'value': lang_code, 'text': f'{display_name} (官方)'})
+                    found_langs.add(lang_code)
+
+            for lang_code in sorted(auto_captions.keys()):
+                simple_lang_code = lang_code.split('-')[0]
+                if simple_lang_code not in found_langs:
+                    display_name = LANGUAGE_CODES.get(simple_lang_code, simple_lang_code)
+                    sub_options.append({'value': lang_code, 'text': f'{display_name} (自动)'})
+                    found_langs.add(simple_lang_code)
+            
+            return jsonify({
+                'type': 'video', 
+                'title': title, 
+                'id': info.get('id'), 
+                'url': info.get('webpage_url', url),
+                'sub_options': sub_options
+            })
+            
     except Exception as e:
-        logger.error(f"处理视频信息请求时发生错误: {str(e)}")
-        logger.error(f"错误详情: {traceback.format_exc()}")
-        return jsonify({'error': f'处理请求失败: {str(e)}'}), 500
+        logger.error(f"获取信息失败: {traceback.format_exc()}")
+        return jsonify({'error': str(e)}), 500
 
-@app.route('/download', methods=['GET'])
-def download_video():
-    try:
-        url = request.args.get('url')
-        
-        logger.info(f"下载请求 - URL: {url}")
-        
-        if not url:
-            logger.error("缺少 URL 参数")
-            return jsonify({'error': '缺少必要的下载参数'}), 400
-        
-        # 转换 URL 为 Twitter 域名
-        twitter_url = url.replace('x.com', 'twitter.com')
-        
-        def generate():
-            try:
-                # 桌面路径
-                desktop_path = os.path.expanduser('~/Desktop')
-                
-                # 极简和高性能的 yt-dlp 配置
-                ydl_opts = {
-                    'format': 'best[ext=mp4]',  # 选择最佳 MP4 格式
-                    'merge_output_format': 'mp4',
-                    'outtmpl': os.path.join(desktop_path, '%(title).80s.%(ext)s'),  # 缩短文件名
-                    
-                    # 性能优化
-                    'no_color': True,
-                    'quiet': True,  # 最小化日志
-                    'no_warnings': True,
-                    'nooverwrites': True,
-                    
-                    # 网络性能极致优化
-                    'socket_timeout': 5,  # 缩短超时
-                    'retries': 1,  # 减少重试
-                    'fragment_retries': 1,
-                    'concurrent_fragments': 16,  # 增加并发数
-                    'buffer_size': '16M',  # 增大缓冲区
-                    
-                    # 精简信息提取
-                    'extract_flat': True,
-                    
-                    # 最小化处理开销
-                    'no_mtime': True,
-                    'no_part': True,
-                    'ignoreerrors': True,
-                    
-                    # 进度钩子
-                    'progress_hooks': [
-                        lambda d: logger.info(f"下载进度: {d.get('_percent_str', 'N/A')}")
-                    ],
-                    
-                    # 后处理优化
-                    'postprocessors': [{
-                        'key': 'FFmpegVideoConvertor',
-                        'preferedformat': 'mp4',
-                    }],
-                    'postprocessor_args': ['-vcodec', 'libx264', '-acodec', 'aac', '-threads', '0', '-preset', 'ultrafast']
-                }
-                
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    logger.info(f"开始快速下载: {twitter_url}")
-                    
-                    try:
-                        # 单步获取信息并下载
-                        info_dict = ydl.extract_info(twitter_url, download=True)
-                        
-                        # 准备文件路径
-                        downloaded_file = ydl.prepare_filename(info_dict)
-                        
-                        # 快速检查文件
-                        if os.path.exists(downloaded_file):
-                            file_size = os.path.getsize(downloaded_file)
-                            logger.info(f"视频已下载: {downloaded_file} ({file_size} 字节)")
-                            
-                            # 发送下载完成事件
-                            yield f"data: {json.dumps({'percent': 100, 'message': '下载完成', 'file': downloaded_file})}\n\n"
-                        else:
-                            logger.error(f"文件未找到: {downloaded_file}")
-                            yield f"data: {json.dumps({'error': '视频下载失败'})}\n\n"
-                    
-                    except Exception as e:
-                        logger.error(f"下载过程错误: {str(e)}")
-                        logger.error(f"错误追踪: {traceback.format_exc()}")
-                        yield f"data: {json.dumps({'error': str(e)})}\n\n"
+@app.route('/add_to_queue', methods=['POST'])
+def add_to_queue():
+    data = request.json
+    videos = data.get('videos', [])
+    quality = data.get('quality', 'best')
+    task_type = data.get('task_type', 'video') # 'video' or 'subtitle'
+    sub_lang = data.get('sub_lang')
+
+    if not videos:
+        return jsonify({'error': '没有要添加的项目'}), 400
+
+    added_count = 0
+    with tasks_lock:
+        for video in videos:
+            if not video or not video.get('url'):
+                logger.warning(f"跳过无效任务（缺少URL）：{video.get('title', '未知标题')}")
+                continue
+
+            task_id = str(uuid.uuid4())
             
-            except Exception as e:
-                logger.error(f"处理过程未知错误: {str(e)}")
-                logger.error(f"错误追踪: {traceback.format_exc()}")
-                yield f"data: {json.dumps({'error': str(e)})}\n\n"
-        
-        return Response(generate(), mimetype='text/event-stream')
+            title = video['title']
+            if task_type == 'subtitle':
+                title = f"[字幕] {title}"
+
+            tasks[task_id] = {
+                'id': task_id,
+                'url': video['url'],
+                'title': title,
+                'status': 'queued',
+                'progress': 0,
+                'type': task_type,
+                # 特定于类型的数据
+                'quality': quality if task_type == 'video' else None,
+                'sub_lang': sub_lang if task_type == 'subtitle' else None,
+            }
+            download_queue.put(task_id)
+            logger.info(f"任务 {task_id} ({title}) 已添加到队列")
+            added_count += 1
+
+    if added_count > 0:
+        return jsonify({'message': f'{added_count} 个任务已添加到队列'})
+    else:
+        return jsonify({'error': '未能添加任何有效任务'}), 400
+
+@app.route('/queue_status')
+def queue_status():
+    with tasks_lock:
+        tasks_copy = list(tasks.values())
     
-    except Exception as e:
-        logger.error(f"请求处理错误: {str(e)}")
-        logger.error(f"错误追踪: {traceback.format_exc()}")
-        return jsonify({'error': f'处理下载请求失败: {str(e)}'}), 500
+    status_order = {'downloading': 0, 'merging': 1, 'queued': 2, 'finished': 3, 'error': 4}
+    sorted_tasks = sorted(tasks_copy, key=lambda x: status_order.get(x['status'], 99))
+    
+    return jsonify(sorted_tasks)
 
-@app.route('/test')
-def test():
-    return "Hello, this is a test page!"
+@app.route('/clear_finished', methods=['POST'])
+def clear_finished():
+    with tasks_lock:
+        finished_task_ids = [task_id for task_id, task in tasks.items() if task['status'] in ['finished', 'error']]
+        for task_id in finished_task_ids:
+            del tasks[task_id]
+    logger.info(f"清除了 {len(finished_task_ids)} 个已完成/错误的任务")
+    return jsonify({'message': '已清除已完成的任务'})
 
-def extract_video_id(url):
-    # 使用正则表达式提取 Twitter/X 视频 ID
-    match = re.search(r'/status/(\d+)', url)
-    if match:
-        return match.group(1)
-    return None
 
-def get_video_data(url):
-    # 这里是获取视频信息的逻辑
-    # 假设我们返回一个模拟的视频数据
-    return {
-        'title': '示例视频',
-        'description': '这是一个示例视频描述',
-        'url': url
-    }
+def open_browser():
+    webbrowser.open_new("http://127.0.0.1:5001")
 
 if __name__ == '__main__':
-    print("启动 Flask 应用...")
-    print(f"Python 版本: {sys.version}")
+    logger.info("🚀 正在初始化流光下载器...")
+    get_ffmpeg_path()
     
-    try:
-        import flask
-        print(f"Flask 版本: {flask.__version__}")
-        
-        # 添加更多的调试信息
-        print("尝试配置应用...")
-        
-        # 确保日志输出到文件
-        file_handler = logging.FileHandler('flask_debug.log', encoding='utf-8')
-        file_handler.setLevel(logging.DEBUG)
-        logger.addHandler(file_handler)
-        
-        # 运行应用
-        print("开始运行应用...")
-        app.run(
-            host='0.0.0.0', 
-            port=5000, 
-            debug=True,
-            use_reloader=False  # 禁用重载器以便更好地捕获错误
-        )
-    except Exception as e:
-        print(f"启动失败，错误信息: {e}")
-        print(f"详细错误追踪: {traceback.format_exc()}")
-        # 将错误写入日志文件
-        with open('startup_error.log', 'w', encoding='utf-8') as f:
-            f.write(f"启动失败，错误信息: {e}\n")
-            f.write(f"详细错误追踪: {traceback.format_exc()}")
+    worker_thread = threading.Thread(target=download_worker, daemon=True)
+    worker_thread.start()
+    logger.info("✅ 后台下载线程已启动")
+
+    if not os.path.exists(COOKIES_FILE):
+        logger.warning("="*50)
+        logger.warning("未找到 cookies.txt 文件！请注意需要登录的网站可能下载失败。")
+        logger.warning("="*50)
+    
+    logger.info("服务器即将启动在 http://127.0.0.1:5001")
+    Timer(1, open_browser).start()
+    
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
+    app.config['JSON_AS_ASCII'] = False
+    
+    @app.after_request
+    def after_request(response):
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        return response
+    
+    logger.info("🎬 流光下载器启动成功！")
+    app.run(host='127.0.0.1', port=5001, debug=False, use_reloader=False, threaded=True)

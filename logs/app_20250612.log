@@ -1,0 +1,455 @@
+2025-06-12 00:05:35,558 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 00:05:36,840 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 00:05:36,840 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 00:05:39,462 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:05:39] "GET / HTTP/1.1" 200 -
+2025-06-12 00:07:07,632 - __main__ - INFO - 收到下载请求 - URL: https://x.com/lexfridman/status/1926382360783695976
+2025-06-12 00:07:07,633 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:07:07] "GET /download?url=https://x.com/lexfridman/status/1926382360783695976 HTTP/1.1" 200 -
+2025-06-12 00:07:07,633 - __main__ - INFO - 检测到非YouTube链接。策略: 直接下载最佳质量的单个文件。
+2025-06-12 00:07:11,575 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Lex Fridman - Here's my conversation with James Holland, a historian specializing i....mp4
+2025-06-12 00:07:11,576 - __main__ - INFO - 启用高速下载模式 (Aria2a + 并发片段)
+2025-06-12 00:07:11,578 - __main__ - ERROR - 致命错误: stream_process_output() got an unexpected keyword argument 'is_youtube_like'
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 185, in _perform_download
+    yield from stream_process_output(process, "下载中", is_youtube_like=ui_mode_is_merge)
+TypeError: stream_process_output() got an unexpected keyword argument 'is_youtube_like'
+
+2025-06-12 00:09:27,588 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 00:09:28,872 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 00:09:28,872 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 00:09:34,335 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:09:34] "GET / HTTP/1.1" 200 -
+2025-06-12 00:09:39,027 - __main__ - INFO - 收到下载请求 - URL: https://x.com/lexfridman/status/1926382360783695976
+2025-06-12 00:09:39,028 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:09:39] "GET /download?url=https://x.com/lexfridman/status/1926382360783695976 HTTP/1.1" 200 -
+2025-06-12 00:09:39,028 - __main__ - INFO - 检测到非YouTube链接。策略: 直接下载最佳质量的单个文件。
+2025-06-12 00:09:42,644 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Lex Fridman - Here's my conversation with James Holland, a historian specializing i....mp4
+2025-06-12 00:09:42,645 - __main__ - INFO - 启用高速下载模式 (Aria2a + 并发片段)
+2025-06-12 00:11:26,170 - __main__ - INFO - 下载完成: Lex Fridman - Here's my conversation with James Holland, a historian specializing i....mp4
+2025-06-12 00:13:37,620 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 00:13:38,905 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 00:13:38,906 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 00:13:41,591 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:13:41] "GET / HTTP/1.1" 200 -
+2025-06-12 00:13:45,719 - __main__ - INFO - 收到下载请求 - URL: https://cn.pornhub.com/view_video.php?viewkey=6824491e0fb2f
+2025-06-12 00:13:45,720 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:13:45] "GET /download?url=https://cn.pornhub.com/view_video.php?viewkey%3D6824491e0fb2f HTTP/1.1" 200 -
+2025-06-12 00:13:45,720 - __main__ - INFO - 检测到非YouTube链接。策略: 直接下载最佳质量的单个文件。
+2025-06-12 00:13:52,927 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Slutty Teen Talia Mint Tries First Anal With Christian Clay's Big Cock.mp4
+2025-06-12 00:13:52,928 - __main__ - INFO - 启用高速下载模式 (Aria2a + 并发片段)
+2025-06-12 00:14:14,851 - __main__ - INFO - 下载完成: Slutty Teen Talia Mint Tries First Anal With Christian Clay's Big Cock.mp4
+2025-06-12 00:17:00,742 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 00:17:02,042 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 00:17:02,042 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 00:17:06,608 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:17:06] "GET / HTTP/1.1" 200 -
+2025-06-12 00:17:18,154 - __main__ - INFO - 收到下载请求 - URL: https://cn.pornhub.com/view_video.php?viewkey=6821b26758686
+2025-06-12 00:17:18,155 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:17:18] "GET /download?url=https://cn.pornhub.com/view_video.php?viewkey%3D6821b26758686 HTTP/1.1" 200 -
+2025-06-12 00:17:18,155 - __main__ - INFO - 检测到非YouTube链接。策略: 直接下载最佳质量的单个文件。
+2025-06-12 00:17:23,773 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\GF’s SISTER Begged Me To Teach Her… Now She Does It Better Than Her Big Sis!.mp4
+2025-06-12 00:17:23,774 - __main__ - INFO - 启用高速下载模式 (Aria2c + 并发片段)
+2025-06-12 00:17:44,838 - __main__ - INFO - 下载完成: GF’s SISTER Begged Me To Teach Her… Now She Does It Better Than Her Big Sis!.mp4
+2025-06-12 00:17:59,198 - __main__ - INFO - 收到下载请求 - URL: https://x.com/TonyLapidus/status/1924164492826460606
+2025-06-12 00:17:59,199 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:17:59] "GET /download?url=https://x.com/TonyLapidus/status/1924164492826460606 HTTP/1.1" 200 -
+2025-06-12 00:17:59,199 - __main__ - INFO - 检测到非YouTube链接。策略: 直接下载最佳质量的单个文件。
+2025-06-12 00:18:02,690 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Tony Lapidus - If @lexfridman interviewed @MikeTyson.mp4
+2025-06-12 00:18:02,691 - __main__ - INFO - 启用高速下载模式 (Aria2c + 并发片段)
+2025-06-12 00:18:10,481 - __main__ - INFO - 下载完成: Tony Lapidus - If @lexfridman interviewed @MikeTyson.mp4
+2025-06-12 00:18:27,606 - __main__ - INFO - 收到下载请求 - URL: https://x.com/lexfridman/status/1915492594567799193
+2025-06-12 00:18:27,606 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:18:27] "GET /download?url=https://x.com/lexfridman/status/1915492594567799193 HTTP/1.1" 200 -
+2025-06-12 00:18:27,606 - __main__ - INFO - 检测到非YouTube链接。策略: 直接下载最佳质量的单个文件。
+2025-06-12 00:18:31,043 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Lex Fridman - Here's my conversation with Jeffrey Wasserstrom, a historian of moder....mp4
+2025-06-12 00:18:31,043 - __main__ - INFO - 启用高速下载模式 (Aria2c + 并发片段)
+2025-06-12 00:20:58,340 - __main__ - INFO - 下载完成: Lex Fridman - Here's my conversation with Jeffrey Wasserstrom, a historian of moder....mp4
+2025-06-12 00:23:43,676 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 00:23:44,960 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 00:23:44,960 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 00:23:50,703 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:23:50] "GET / HTTP/1.1" 200 -
+2025-06-12 00:24:25,126 - __main__ - INFO - 收到下载请求 - URL: https://x.com/lexfridman/status/1875982164321239202
+2025-06-12 00:24:25,126 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:24:25] "GET /download?url=https://x.com/lexfridman/status/1875982164321239202 HTTP/1.1" 200 -
+2025-06-12 00:24:25,126 - __main__ - INFO - 检测到非YouTube链接。策略: 直接下载最佳质量的单个文件。
+2025-06-12 00:24:27,812 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Lex Fridman - Here's my conversation with Volodymyr Zelenskyy (@ZelenskyyUa).  It w....mp4
+2025-06-12 00:24:27,813 - __main__ - INFO - 启用高速下载模式 (Aria2c + 并发片段)
+2025-06-12 00:30:16,743 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:30:16] "GET / HTTP/1.1" 200 -
+2025-06-12 00:30:59,411 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 00:31:00,691 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 00:31:00,691 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 00:31:03,784 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:31:03] "GET / HTTP/1.1" 200 -
+2025-06-12 00:31:09,075 - __main__ - INFO - 收到下载请求 - URL: https://x.com/lexfridman/status/1875982164321239202
+2025-06-12 00:31:09,076 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:31:09] "GET /download?url=https://x.com/lexfridman/status/1875982164321239202 HTTP/1.1" 200 -
+2025-06-12 00:31:09,077 - __main__ - INFO - 检测到非YouTube链接。策略: 直接下载最佳质量的单个文件。
+2025-06-12 00:31:12,162 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Lex Fridman - Here's my conversation with Volodymyr Zelenskyy (@ZelenskyyUa).  It w....mp4
+2025-06-12 00:31:12,163 - __main__ - INFO - 启用高速下载模式 (Aria2c)。将依赖Aria2c的日志进行进度解析。
+2025-06-12 00:32:11,883 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 00:32:13,169 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 00:32:13,169 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 00:32:15,658 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:32:15] "GET / HTTP/1.1" 200 -
+2025-06-12 00:32:51,980 - __main__ - INFO - 收到下载请求 - URL: https://cn.pornhub.com/view_video.php?viewkey=6838bc8c473b3
+2025-06-12 00:32:51,981 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:32:51] "GET /download?url=https://cn.pornhub.com/view_video.php?viewkey%3D6838bc8c473b3 HTTP/1.1" 200 -
+2025-06-12 00:32:51,982 - __main__ - INFO - 检测到非YouTube链接。策略: 直接下载最佳质量的单个文件。
+2025-06-12 00:33:13,038 - __main__ - ERROR - 致命错误: 获取信息失败: ERROR: [PornHub] 6838bc8c473b3: Unable to download webpage: HTTPSConnectionPool(host='www.pornhub.com', port=443): Read timed out. (read timeout=20.0) (caused by TransportError("HTTPSConnectionPool(host='www.pornhub.com', port=443): Read timed out. (read timeout=20.0)"))
+
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 144, in _perform_download
+    raise Exception(f"获取信息失败: {info_process.stderr}")
+Exception: 获取信息失败: ERROR: [PornHub] 6838bc8c473b3: Unable to download webpage: HTTPSConnectionPool(host='www.pornhub.com', port=443): Read timed out. (read timeout=20.0) (caused by TransportError("HTTPSConnectionPool(host='www.pornhub.com', port=443): Read timed out. (read timeout=20.0)"))
+
+
+2025-06-12 00:33:24,077 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:33:24] "GET / HTTP/1.1" 200 -
+2025-06-12 00:33:25,740 - __main__ - INFO - 收到下载请求 - URL: https://cn.pornhub.com/view_video.php?viewkey=6838bc8c473b3
+2025-06-12 00:33:25,741 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:33:25] "GET /download?url=https://cn.pornhub.com/view_video.php?viewkey%3D6838bc8c473b3 HTTP/1.1" 200 -
+2025-06-12 00:33:25,742 - __main__ - INFO - 检测到非YouTube链接。策略: 直接下载最佳质量的单个文件。
+2025-06-12 00:33:34,831 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\American beauty Kagney Linn Karter soapy titty fucking flexible shower fuck.mp4
+2025-06-12 00:33:34,831 - __main__ - INFO - 启用高速下载模式 (Aria2c)。将依赖Aria2c的日志进行进度解析。
+2025-06-12 00:35:58,686 - __main__ - INFO - 下载完成: American beauty Kagney Linn Karter soapy titty fucking flexible shower fuck.mp4
+2025-06-12 00:37:28,878 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=RFnV9_ocDc0
+2025-06-12 00:37:28,879 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 00:37:28] "GET /download?url=https://www.youtube.com/watch?v%3DRFnV9_ocDc0 HTTP/1.1" 200 -
+2025-06-12 00:37:28,879 - __main__ - INFO - 检测到YouTube链接。策略: 下载最佳音视频并合并。
+2025-06-12 00:37:38,909 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Google buyouts highlight tech's cost-cutting amid AI CapEx boom.mp4
+2025-06-12 00:37:38,909 - __main__ - INFO - 启用高速下载模式 (Aria2c)。将依赖Aria2c的日志进行进度解析。
+2025-06-12 00:37:47,428 - __main__ - INFO - 检测到新的下载目标，切换到第 1/2 部分
+2025-06-12 00:37:49,970 - __main__ - INFO - 检测到新的下载目标，切换到第 2/2 部分
+2025-06-12 00:37:51,768 - __main__ - INFO - 下载完成: Google buyouts highlight tech's cost-cutting amid AI CapEx boom.mp4
+2025-06-12 21:44:24,928 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 21:44:24,964 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 21:44:24,964 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 21:44:28,129 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 21:44:28] "GET / HTTP/1.1" 200 -
+2025-06-12 21:44:29,786 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 21:44:29] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-12 21:44:50,972 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=_8pZmYrbigg
+2025-06-12 21:44:50,973 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 21:44:50] "GET /download?url=https://www.youtube.com/watch?v%3D_8pZmYrbigg HTTP/1.1" 200 -
+2025-06-12 21:44:50,973 - __main__ - INFO - 检测到YouTube链接。策略: 下载最佳音视频并合并。
+2025-06-12 21:44:56,136 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\Build an agent_ Define your agent's behavior.mp4
+2025-06-12 21:44:56,137 - __main__ - INFO - 启用高速下载模式 (Aria2c)。将依赖Aria2c的日志进行进度解析。
+2025-06-12 21:45:00,373 - __main__ - INFO - 检测到新的下载目标，切换到第 1/2 部分
+2025-06-12 21:45:02,622 - __main__ - INFO - 检测到新的下载目标，切换到第 2/2 部分
+2025-06-12 21:45:21,168 - __main__ - INFO - 下载完成: Build an agent_ Define your agent's behavior.mp4
+2025-06-12 22:10:38,703 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 22:10:38,738 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 22:10:38,738 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 22:10:42,094 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:10:42] "GET / HTTP/1.1" 200 -
+2025-06-12 22:11:48,798 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=KEQjwE7hDjk
+2025-06-12 22:11:48,798 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:11:48] "GET /download?url=https://www.youtube.com/watch?v%3DKEQjwE7hDjk HTTP/1.1" 200 -
+2025-06-12 22:11:48,798 - __main__ - INFO - 检测到YouTube链接。策略: 下载最佳音视频并合并。
+2025-06-12 22:11:48,875 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=KEQjwE7hDjk
+2025-06-12 22:11:53,469 - __main__ - ERROR - 获取信息时出错: 获取信息失败: ERROR: [youtube] KEQjwE7hDjk: Sign in to confirm youre not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 242, in get_video_info
+    raise Exception(f"获取信息失败: {process.stderr}")
+Exception: 获取信息失败: ERROR: [youtube] KEQjwE7hDjk: Sign in to confirm youre not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+
+2025-06-12 22:11:53,469 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:11:53] "[35m[1mGET /info?url=https://www.youtube.com/watch?v%3DKEQjwE7hDjk HTTP/1.1[0m" 500 -
+2025-06-12 22:11:56,915 - __main__ - ERROR - 致命错误: 获取信息失败: ERROR: [youtube] KEQjwE7hDjk: Sign in to confirm youre not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 144, in _perform_download
+    raise Exception(f"获取信息失败: {info_process.stderr}")
+Exception: 获取信息失败: ERROR: [youtube] KEQjwE7hDjk: Sign in to confirm youre not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+
+2025-06-12 22:11:59,650 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=KEQjwE7hDjk
+2025-06-12 22:11:59,651 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:11:59] "GET /download?url=https://www.youtube.com/watch?v%3DKEQjwE7hDjk HTTP/1.1" 200 -
+2025-06-12 22:11:59,651 - __main__ - INFO - 检测到YouTube链接。策略: 下载最佳音视频并合并。
+2025-06-12 22:12:05,736 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\How to build an AI-first organization _ Ethan Mollick.mp4
+2025-06-12 22:12:05,736 - __main__ - ERROR - 致命错误: name 'sub_lang' is not defined
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 166, in _perform_download
+    if sub_lang and sub_lang != 'none':
+NameError: name 'sub_lang' is not defined
+
+2025-06-12 22:19:41,170 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 22:19:41,192 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 22:19:41,193 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 22:19:44,962 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:19:44] "GET / HTTP/1.1" 200 -
+2025-06-12 22:19:51,126 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=KEQjwE7hDjk
+2025-06-12 22:19:51,306 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=KEQjwE7hDjk
+2025-06-12 22:19:51,307 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:19:51] "GET /download?url=https://www.youtube.com/watch?v%3DKEQjwE7hDjk HTTP/1.1" 200 -
+2025-06-12 22:19:51,307 - __main__ - INFO - 检测到YouTube链接。策略: 下载最佳音视频并合并。
+2025-06-12 22:19:56,906 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:19:56] "GET /info?url=https://www.youtube.com/watch?v%3DKEQjwE7hDjk HTTP/1.1" 200 -
+2025-06-12 22:20:17,203 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\How to build an AI-first organization _ Ethan Mollick.mp4
+2025-06-12 22:20:17,204 - __main__ - ERROR - 致命错误: name 'sub_lang' is not defined
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 166, in _perform_download
+    if sub_lang and sub_lang != 'none':
+NameError: name 'sub_lang' is not defined
+
+2025-06-12 22:20:42,873 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=KEQjwE7hDjk
+2025-06-12 22:20:42,873 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:20:42] "GET /download?url=https://www.youtube.com/watch?v%3DKEQjwE7hDjk&sub_lang=en HTTP/1.1" 200 -
+2025-06-12 22:20:42,874 - __main__ - INFO - 检测到YouTube链接。策略: 下载最佳音视频并合并。
+2025-06-12 22:20:56,649 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\How to build an AI-first organization _ Ethan Mollick.mp4
+2025-06-12 22:20:56,649 - __main__ - ERROR - 致命错误: name 'sub_lang' is not defined
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 166, in _perform_download
+    if sub_lang and sub_lang != 'none':
+NameError: name 'sub_lang' is not defined
+
+2025-06-12 22:24:17,414 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 22:24:17,431 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 22:24:17,431 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 22:24:21,509 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:24:21] "GET / HTTP/1.1" 200 -
+2025-06-12 22:24:26,562 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=KEQjwE7hDjk
+2025-06-12 22:24:26,826 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=KEQjwE7hDjk
+2025-06-12 22:24:26,826 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:24:26] "GET /download?url=https://www.youtube.com/watch?v%3DKEQjwE7hDjk HTTP/1.1" 200 -
+2025-06-12 22:24:26,826 - __main__ - INFO - 检测到YouTube链接。策略: 下载最佳音视频并合并。
+2025-06-12 22:24:31,493 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:24:31] "GET /info?url=https://www.youtube.com/watch?v%3DKEQjwE7hDjk HTTP/1.1" 200 -
+2025-06-12 22:24:31,562 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\How to build an AI-first organization _ Ethan Mollick.mp4
+2025-06-12 22:24:31,563 - __main__ - ERROR - 致命错误: name 'sub_lang' is not defined
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 166, in _perform_download
+    if sub_lang and sub_lang != 'none':
+NameError: name 'sub_lang' is not defined
+
+2025-06-12 22:24:36,293 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=KEQjwE7hDjk
+2025-06-12 22:24:36,294 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:24:36] "GET /download?url=https://www.youtube.com/watch?v%3DKEQjwE7hDjk HTTP/1.1" 200 -
+2025-06-12 22:24:36,295 - __main__ - INFO - 检测到YouTube链接。策略: 下载最佳音视频并合并。
+2025-06-12 22:24:45,214 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\How to build an AI-first organization _ Ethan Mollick.mp4
+2025-06-12 22:24:45,214 - __main__ - ERROR - 致命错误: name 'sub_lang' is not defined
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 166, in _perform_download
+    if sub_lang and sub_lang != 'none':
+NameError: name 'sub_lang' is not defined
+
+2025-06-12 22:25:06,348 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=KEQjwE7hDjk
+2025-06-12 22:25:06,349 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:25:06] "GET /download?url=https://www.youtube.com/watch?v%3DKEQjwE7hDjk&sub_lang=en HTTP/1.1" 200 -
+2025-06-12 22:25:06,349 - __main__ - INFO - 检测到YouTube链接。策略: 下载最佳音视频并合并。
+2025-06-12 22:25:10,587 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\How to build an AI-first organization _ Ethan Mollick.mp4
+2025-06-12 22:25:10,587 - __main__ - ERROR - 致命错误: name 'sub_lang' is not defined
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 166, in _perform_download
+    if sub_lang and sub_lang != 'none':
+NameError: name 'sub_lang' is not defined
+
+2025-06-12 22:25:53,078 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1767s
+2025-06-12 22:25:53,363 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1767s
+2025-06-12 22:25:53,363 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:25:53] "GET /download?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1767s&sub_lang=en HTTP/1.1" 200 -
+2025-06-12 22:25:53,363 - __main__ - INFO - 检测到YouTube链接。策略: 下载最佳音视频并合并。
+2025-06-12 22:25:57,601 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\A Quest for a Cure_ AI Drug Design with Isomorphic Labs.mp4
+2025-06-12 22:25:57,608 - __main__ - ERROR - 致命错误: name 'sub_lang' is not defined
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 166, in _perform_download
+    if sub_lang and sub_lang != 'none':
+NameError: name 'sub_lang' is not defined
+
+2025-06-12 22:25:57,732 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:25:57] "GET /info?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1767s HTTP/1.1" 200 -
+2025-06-12 22:26:19,189 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1767s
+2025-06-12 22:26:19,190 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:26:19] "GET /download?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1767s&sub_lang=en HTTP/1.1" 200 -
+2025-06-12 22:26:19,190 - __main__ - INFO - 检测到YouTube链接。策略: 下载最佳音视频并合并。
+2025-06-12 22:26:23,608 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\A Quest for a Cure_ AI Drug Design with Isomorphic Labs.mp4
+2025-06-12 22:26:23,608 - __main__ - ERROR - 致命错误: name 'sub_lang' is not defined
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 166, in _perform_download
+    if sub_lang and sub_lang != 'none':
+NameError: name 'sub_lang' is not defined
+
+2025-06-12 22:31:39,596 - __main__ - CRITICAL - !!!!!!!!!! app.py V3 IS LOADING NOW !!!!!!!!!!
+2025-06-12 22:31:39,597 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 22:31:39,618 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 22:31:39,618 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 22:31:47,496 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:31:47] "GET / HTTP/1.1" 200 -
+2025-06-12 22:31:53,150 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1767s
+2025-06-12 22:31:53,277 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1767s, Subtitle: None
+2025-06-12 22:31:53,278 - __main__ - CRITICAL - !!!!!!!!!! ENTERING _perform_download, sub_lang IS: None !!!!!!!!!!
+2025-06-12 22:31:53,278 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:31:53] "GET /download?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1767s HTTP/1.1" 200 -
+2025-06-12 22:31:53,278 - __main__ - INFO - 检测到YouTube链接。策略: 下载最佳音视频并合并。
+2025-06-12 22:31:57,668 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:31:57] "GET /info?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1767s HTTP/1.1" 200 -
+2025-06-12 22:32:00,728 - __main__ - INFO - 将保存至: C:\Users\WINDOWS\Desktop\A Quest for a Cure_ AI Drug Design with Isomorphic Labs.mp4
+2025-06-12 22:32:00,729 - __main__ - INFO - 启用高速下载模式 (Aria2c)。将依赖Aria2c的日志进行进度解析。
+2025-06-12 22:32:05,721 - __main__ - INFO - 检测到新的下载目标，切换到第 1/2 部分
+2025-06-12 22:35:26,683 - __main__ - INFO - 检测到新的下载目标，切换到第 2/2 部分
+2025-06-12 22:35:46,709 - __main__ - INFO - 下载完成: A Quest for a Cure_ AI Drug Design with Isomorphic Labs.mp4
+2025-06-12 22:49:52,614 - __main__ - CRITICAL - !!!!!!!!!! app.py V3 IS LOADING NOW !!!!!!!!!!
+2025-06-12 22:49:52,615 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 22:49:52,638 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 22:49:52,638 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 22:49:55,635 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:49:55] "GET / HTTP/1.1" 200 -
+2025-06-12 22:50:00,150 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1767s
+2025-06-12 22:50:00,455 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1767s, Subtitle: None, Mode: video
+2025-06-12 22:50:00,456 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:50:00] "GET /download?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1767s HTTP/1.1" 200 -
+2025-06-12 22:50:05,720 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:50:05] "GET /info?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1767s HTTP/1.1" 200 -
+2025-06-12 22:50:07,411 - __main__ - INFO - 模式: 视频下载。将保存至: C:\Users\WINDOWS\Desktop\A Quest for a Cure_ AI Drug Design with Isomorphic Labs.mp4
+2025-06-12 22:50:07,412 - __main__ - INFO - 检测到YouTube链接。策略: 下载1080p或以下的最佳音视频并合并。
+2025-06-12 22:50:07,413 - __main__ - INFO - 启用高速下载模式 (Aria2c)。
+2025-06-12 22:50:12,711 - __main__ - INFO - 检测到新的下载目标，切换到第 1/2 部分
+2025-06-12 22:55:14,282 - __main__ - INFO - 检测到新的下载目标，切换到第 2/2 部分
+2025-06-12 22:57:53,225 - __main__ - INFO - 下载完成: A Quest for a Cure_ AI Drug Design with Isomorphic Labs.mp4
+2025-06-12 22:57:56,234 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1767s, Subtitle: None, Mode: video
+2025-06-12 22:57:56,235 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 22:57:56] "GET /download?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1767s HTTP/1.1" 200 -
+2025-06-12 22:58:42,260 - __main__ - INFO - 模式: 视频下载。将保存至: C:\Users\WINDOWS\Desktop\A Quest for a Cure_ AI Drug Design with Isomorphic Labs.mp4
+2025-06-12 22:58:42,260 - __main__ - INFO - 检测到YouTube链接。策略: 下载1080p或以下的最佳音视频并合并。
+2025-06-12 22:58:42,260 - __main__ - INFO - 启用高速下载模式 (Aria2c)。
+2025-06-12 22:58:55,248 - __main__ - INFO - 检测到新的下载目标，切换到第 1/2 部分
+2025-06-12 23:14:54,357 - __main__ - CRITICAL - !!!!!!!!!! app.py V3 IS LOADING NOW !!!!!!!!!!
+2025-06-12 23:14:54,358 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 23:14:54,376 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 23:14:54,376 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 23:14:57,216 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:14:57] "GET / HTTP/1.1" 200 -
+2025-06-12 23:15:09,496 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=C53xEOdxz70
+2025-06-12 23:15:13,472 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=C53xEOdxz70, Subtitle: None, Mode: video
+2025-06-12 23:15:17,234 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:15:17] "GET /info?url=https://www.youtube.com/watch?v%3DC53xEOdxz70 HTTP/1.1" 200 -
+2025-06-12 23:15:20,818 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:15:20] "GET /download?url=https://www.youtube.com/watch?v%3DC53xEOdxz70 HTTP/1.1" 200 -
+2025-06-12 23:15:20,819 - __main__ - INFO - 模式: 视频下载。将保存至: C:\Users\WINDOWS\Desktop\Foundation — Season 3 Official Trailer _ Apple TV+.mp4
+2025-06-12 23:15:27,365 - __main__ - INFO - 检测到新的下载目标，切换到第 1/2 部分
+2025-06-12 23:15:39,611 - __main__ - INFO - 检测到新的下载目标，切换到第 2/2 部分
+2025-06-12 23:15:48,426 - __main__ - INFO - 下载完成: Foundation — Season 3 Official Trailer _ Apple TV+.mp4
+2025-06-12 23:15:51,438 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=C53xEOdxz70, Subtitle: None, Mode: video
+2025-06-12 23:15:59,004 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:15:59] "GET /download?url=https://www.youtube.com/watch?v%3DC53xEOdxz70 HTTP/1.1" 200 -
+2025-06-12 23:15:59,004 - __main__ - INFO - 模式: 视频下载。将保存至: C:\Users\WINDOWS\Desktop\Foundation — Season 3 Official Trailer _ Apple TV+.mp4
+2025-06-12 23:16:06,517 - __main__ - INFO - 检测到新的下载目标，切换到第 1/2 部分
+2025-06-12 23:16:40,640 - __main__ - INFO - 检测到新的下载目标，切换到第 2/2 部分
+2025-06-12 23:16:52,369 - __main__ - INFO - 下载完成: Foundation — Season 3 Official Trailer _ Apple TV+.mp4
+2025-06-12 23:16:55,388 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=C53xEOdxz70, Subtitle: None, Mode: video
+2025-06-12 23:17:03,764 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:17:03] "GET /download?url=https://www.youtube.com/watch?v%3DC53xEOdxz70 HTTP/1.1" 200 -
+2025-06-12 23:17:03,764 - __main__ - INFO - 模式: 视频下载。将保存至: C:\Users\WINDOWS\Desktop\Foundation — Season 3 Official Trailer _ Apple TV+.mp4
+2025-06-12 23:17:25,860 - __main__ - INFO - 检测到新的下载目标，切换到第 1/2 部分
+2025-06-12 23:17:40,923 - __main__ - INFO - 检测到新的下载目标，切换到第 2/2 部分
+2025-06-12 23:17:46,365 - __main__ - INFO - 下载完成: Foundation — Season 3 Official Trailer _ Apple TV+.mp4
+2025-06-12 23:17:49,368 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=C53xEOdxz70, Subtitle: None, Mode: video
+2025-06-12 23:17:56,607 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:17:56] "GET /download?url=https://www.youtube.com/watch?v%3DC53xEOdxz70 HTTP/1.1" 200 -
+2025-06-12 23:17:56,607 - __main__ - INFO - 模式: 视频下载。将保存至: C:\Users\WINDOWS\Desktop\Foundation — Season 3 Official Trailer _ Apple TV+.mp4
+2025-06-12 23:18:08,390 - __main__ - INFO - 检测到新的下载目标，切换到第 1/2 部分
+2025-06-12 23:18:46,306 - __main__ - INFO - 检测到新的下载目标，切换到第 2/2 部分
+2025-06-12 23:18:52,514 - __main__ - INFO - 下载完成: Foundation — Season 3 Official Trailer _ Apple TV+.mp4
+2025-06-12 23:18:55,529 - __main__ - INFO - 收到下载请求 - URL: https://www.youtube.com/watch?v=C53xEOdxz70, Subtitle: None, Mode: video
+2025-06-12 23:18:58,733 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:18:58] "GET / HTTP/1.1" 200 -
+2025-06-12 23:24:10,197 - __main__ - CRITICAL - !!!!!!!!!! app.py V3 IS LOADING NOW !!!!!!!!!!
+2025-06-12 23:24:10,198 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 23:24:10,217 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 23:24:10,217 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 23:24:12,902 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:24:12] "[33mGET / HTTP/1.1[0m" 404 -
+2025-06-12 23:24:21,009 - werkzeug - INFO - 127.0.0.1 - - [12/Jun/2025 23:24:21] "[33mGET / HTTP/1.1[0m" 404 -
+2025-06-12 23:24:22,546 - werkzeug - INFO - 127.0.0.1 - - [12/Jun/2025 23:24:22] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-12 23:24:53,608 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:24:53] "[33mGET / HTTP/1.1[0m" 404 -
+2025-06-12 23:28:51,269 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 23:28:51,292 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 23:28:51,292 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 23:28:55,323 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:28:55] "GET / HTTP/1.1" 200 -
+2025-06-12 23:29:14,176 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=C53xEOdxz70
+2025-06-12 23:29:24,550 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:29:24] "GET /info?url=https://www.youtube.com/watch?v%3DC53xEOdxz70 HTTP/1.1" 200 -
+2025-06-12 23:29:31,475 - __main__ - INFO - 收到【字幕】下载请求 - URL: https://www.youtube.com/watch?v=C53xEOdxz70, Subtitle: en
+2025-06-12 23:29:40,153 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:29:40] "GET /download_subs?url=https://www.youtube.com/watch?v%3DC53xEOdxz70&sub_lang=en HTTP/1.1" 200 -
+2025-06-12 23:29:40,153 - __main__ - INFO - 模式: 仅字幕。将保存至: C:\Users\WINDOWS\Desktop\Foundation — Season 3 Official Trailer _ Apple TV+.en.srt
+2025-06-12 23:29:47,524 - __main__ - INFO - 下载完成: Foundation — Season 3 Official Trailer _ Apple TV+.en.srt
+2025-06-12 23:30:27,059 - __main__ - INFO - 收到【视频】下载请求 - URL: https://www.youtube.com/watch?v=C53xEOdxz70, Subtitle: en
+2025-06-12 23:30:35,225 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:30:35] "GET /download_video?url=https://www.youtube.com/watch?v%3DC53xEOdxz70&sub_lang=en HTTP/1.1" 200 -
+2025-06-12 23:30:35,225 - __main__ - INFO - 模式: 视频下载。将保存至: C:\Users\WINDOWS\Desktop\Foundation — Season 3 Official Trailer _ Apple TV+.mp4
+2025-06-12 23:30:42,337 - __main__ - INFO - 检测到新的下载目标，切换到第 1/2 部分
+2025-06-12 23:30:42,623 - __main__ - INFO - 检测到新的下载目标，切换到第 2/2 部分
+2025-06-12 23:30:52,647 - __main__ - INFO - 下载完成: Foundation — Season 3 Official Trailer _ Apple TV+.mp4
+2025-06-12 23:31:24,340 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1770s
+2025-06-12 23:31:28,627 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:31:28] "GET /info?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1770s HTTP/1.1" 200 -
+2025-06-12 23:31:36,732 - __main__ - INFO - 收到【字幕】下载请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1770s, Subtitle: en
+2025-06-12 23:31:45,193 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:31:45] "GET /download_subs?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1770s&sub_lang=en HTTP/1.1" 200 -
+2025-06-12 23:31:45,193 - __main__ - INFO - 模式: 仅字幕。将保存至: C:\Users\WINDOWS\Desktop\A Quest for a Cure_ AI Drug Design with Isomorphic Labs.en.srt
+2025-06-12 23:31:51,009 - __main__ - INFO - 下载完成: A Quest for a Cure_ AI Drug Design with Isomorphic Labs.en.srt
+2025-06-12 23:34:45,100 - __main__ - INFO - 收到【字幕】下载请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1770s, Subtitle: en
+2025-06-12 23:34:52,012 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:34:52] "GET /download_subs?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1770s&sub_lang=en HTTP/1.1" 200 -
+2025-06-12 23:34:52,012 - __main__ - INFO - 模式: 仅字幕。将保存至: C:\Users\WINDOWS\Desktop\A Quest for a Cure_ AI Drug Design with Isomorphic Labs.en.srt
+2025-06-12 23:34:57,147 - __main__ - INFO - 下载完成: A Quest for a Cure_ AI Drug Design with Isomorphic Labs.en.srt
+2025-06-12 23:35:13,691 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:35:13] "GET / HTTP/1.1" 200 -
+2025-06-12 23:35:19,643 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1770s
+2025-06-12 23:35:31,104 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:35:31] "GET /info?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1770s HTTP/1.1" 200 -
+2025-06-12 23:35:39,415 - __main__ - INFO - 收到【字幕】下载请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1770s, Subtitle: en
+2025-06-12 23:35:47,157 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:35:47] "GET /download_subs?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1770s&sub_lang=en HTTP/1.1" 200 -
+2025-06-12 23:35:47,157 - __main__ - INFO - 模式: 仅字幕。将保存至: C:\Users\WINDOWS\Desktop\A Quest for a Cure_ AI Drug Design with Isomorphic Labs.en.srt
+2025-06-12 23:35:52,806 - __main__ - INFO - 下载完成: A Quest for a Cure_ AI Drug Design with Isomorphic Labs.en.srt
+2025-06-12 23:38:58,189 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 23:38:58,223 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 23:38:58,223 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 23:39:01,014 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:39:01] "GET / HTTP/1.1" 200 -
+2025-06-12 23:39:06,231 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1770s
+2025-06-12 23:39:12,132 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:39:12] "GET /info?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1770s HTTP/1.1" 200 -
+2025-06-12 23:39:17,463 - __main__ - INFO - 收到【字幕】下载请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1770s, Subtitle: en
+2025-06-12 23:39:26,219 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:39:26] "GET /download_subs?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1770s&sub_lang=en HTTP/1.1" 200 -
+2025-06-12 23:39:26,219 - __main__ - INFO - 模式: 仅字幕。将保存至: C:\Users\WINDOWS\Desktop\A Quest for a Cure_ AI Drug Design with Isomorphic Labs.en.srt
+2025-06-12 23:39:31,737 - __main__ - ERROR - 下载失败：请求的字幕语言(en)可能不存在或无法下载。
+2025-06-12 23:39:31,737 - __main__ - ERROR - 下载执行期间出错: 下载失败：请求的字幕语言(en)可能不存在或无法下载。
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 155, in _perform_download
+    raise RuntimeError(error_message)
+RuntimeError: 下载失败：请求的字幕语言(en)可能不存在或无法下载。
+
+2025-06-12 23:43:05,693 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 23:43:05,710 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 23:43:05,710 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 23:43:08,607 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:43:08] "GET / HTTP/1.1" 200 -
+2025-06-12 23:43:13,962 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1770s
+2025-06-12 23:43:19,107 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:43:19] "GET /info?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1770s HTTP/1.1" 200 -
+2025-06-12 23:43:34,503 - __main__ - INFO - 收到【字幕】下载请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1770s, Subtitle: en
+2025-06-12 23:43:49,136 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:43:49] "GET /download_subs?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1770s&sub_lang=en HTTP/1.1" 200 -
+2025-06-12 23:43:49,137 - __main__ - INFO - 模式: 仅字幕。将保存至: C:\Users\WINDOWS\Desktop\A Quest for a Cure_ AI Drug Design with Isomorphic Labs.en.srt
+2025-06-12 23:43:56,547 - __main__ - ERROR - 下载失败：请求的字幕语言(en)可能不存在或无法下载。
+2025-06-12 23:43:56,547 - __main__ - ERROR - 下载执行期间出错: 下载失败：请求的字幕语言(en)可能不存在或无法下载。
+Traceback (most recent call last):
+  File "D:\Projects\X vedio downloader\app.py", line 174, in _perform_download
+    raise RuntimeError(error_message)
+RuntimeError: 下载失败：请求的字幕语言(en)可能不存在或无法下载。
+
+2025-06-12 23:46:30,498 - __main__ - INFO - 服务器即将启动在 http://127.0.0.1:5000
+2025-06-12 23:46:30,515 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.247:5000
+2025-06-12 23:46:30,516 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-12 23:46:33,113 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:46:33] "GET / HTTP/1.1" 200 -
+2025-06-12 23:46:38,099 - __main__ - INFO - 收到信息获取请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1770s
+2025-06-12 23:46:45,488 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:46:45] "GET /info?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1770s HTTP/1.1" 200 -
+2025-06-12 23:46:54,795 - __main__ - INFO - 收到【字幕】下载请求 - URL: https://www.youtube.com/watch?v=XpIMuCeEtSk&t=1770s, Subtitle: en
+2025-06-12 23:47:03,356 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:47:03] "GET /download_subs?url=https://www.youtube.com/watch?v%3DXpIMuCeEtSk%26t%3D1770s&sub_lang=en HTTP/1.1" 200 -
+2025-06-12 23:47:12,428 - __main__ - INFO - 智能检测到实际生成的文件: C:\Users\WINDOWS\Desktop\A Quest for a Cure_ AI Drug Design with Isomorphic Labs.en.srt.en-j3PyPqV-e1s.vtt
+2025-06-12 23:47:12,428 - __main__ - INFO - 已成功重命名为: C:\Users\WINDOWS\Desktop\A Quest for a Cure_ AI Drug Design with Isomorphic Labs.en.srt
+2025-06-12 23:47:12,428 - __main__ - INFO - 下载完成: A Quest for a Cure_ AI Drug Design with Isomorphic Labs.en.srt
+2025-06-12 23:49:58,728 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:49:58] "GET / HTTP/1.1" 200 -
+2025-06-12 23:50:06,400 - __main__ - INFO - 收到信息获取请求 - URL: https://x.com/DLKFZWilliam2/status/1933166330284556483
+2025-06-12 23:50:16,047 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:50:16] "GET /info?url=https://x.com/DLKFZWilliam2/status/1933166330284556483 HTTP/1.1" 200 -
+2025-06-12 23:50:19,829 - __main__ - INFO - 收到【视频】下载请求 - URL: https://x.com/DLKFZWilliam2/status/1933166330284556483, Subtitle: None
+2025-06-12 23:50:22,779 - werkzeug - INFO - 192.168.2.247 - - [12/Jun/2025 23:50:22] "GET /download_video?url=https://x.com/DLKFZWilliam2/status/1933166330284556483 HTTP/1.1" 200 -
+2025-06-12 23:50:38,308 - __main__ - INFO - 下载完成: 独立开发者William - 晨跑ing.mp4
