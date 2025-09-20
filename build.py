@@ -8,18 +8,77 @@ import os
 import sys
 import shutil
 import subprocess
+import time
+import stat
 from pathlib import Path
+import importlib.util
+import ctypes
+
+# -------------------------------------------------------------
+# 环境自检：避免用意外的解释器 (例如 conda env) 打包导致 _ctypes 缺失
+# -------------------------------------------------------------
+def environment_self_check():
+    print("\n[环境自检] Python 可执行: ", sys.executable)
+    print("[环境自检] sys.prefix    : ", sys.prefix)
+    print("[环境自检] sys.base_prefix: ", sys.base_prefix)
+    # 检查 _ctypes
+    try:
+        import _ctypes  # noqa: F401
+        print("+ _ctypes 模块可导入")
+        ctypes_file = getattr(_ctypes, '__file__', None)
+        if ctypes_file:
+            print(f"  _ctypes 路径: {ctypes_file}")
+    except Exception as e:
+        print(f"- 警告：无法导入 _ctypes ({e})，可能导致最终 exe 启动失败。")
+    # 检查 libffi (仅在 Windows 下意义较大)
+    if sys.platform.startswith('win'):
+        dll_dir = Path(sys.base_prefix) / 'DLLs'
+        candidates = ['libffi-8.dll','libffi-7.dll','libffi.dll','ffi.dll']
+        found = False
+        for name in candidates:
+            if (dll_dir / name).exists():
+                print(f"+ 检测到 libffi 相关: {(dll_dir / name)}")
+                found = True
+                break
+        if not found:
+            print("- 未找到 libffi DLL，若执行期出现 _ctypes 加载失败，可手动把对应 DLL 加入 spec binaries")
+    # 给出系统 Python vs conda 提示
+    if 'conda' in sys.executable.lower() or 'envs' in sys.executable.lower():
+        print("[提示] 当前使用的是 Conda/虚拟环境，若目标是在普通 Windows 上运行，建议改用系统安装的 Python 重打包。")
+    print("[环境自检] 完成\n")
 
 def run_command(cmd, description):
-    """运行命令并显示结果"""
+    """运行命令并显示结果 (宽容解码)"""
     print(f"\n正在{description}...")
     try:
-        result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True, encoding='utf-8')
-        print(f"+ {description}成功")
-        return True
-    except subprocess.CalledProcessError as e:
-        print(f"- {description}失败:")
-        print(f"错误: {e.stderr}")
+        proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out_b, err_b = proc.communicate()
+        rc = proc.returncode
+        def _decode(data: bytes) -> str:
+            if data is None:
+                return ''
+            for enc in ('utf-8','gbk','cp936','latin-1'):
+                try:
+                    return data.decode(enc)
+                except Exception:
+                    continue
+            return data.decode('utf-8','ignore')
+        out = _decode(out_b)
+        err = _decode(err_b)
+        if rc == 0:
+            print(f"+ {description}成功")
+            if out.strip():
+                print(out.strip()[:800])
+            return True
+        else:
+            print(f"- {description}失败 (returncode={rc})")
+            if err.strip():
+                print(err.strip()[:800])
+            else:
+                print(out.strip()[:800])
+            return False
+    except Exception as e:
+        print(f"- {description}异常: {e}")
         return False
 
 def check_dependencies():
@@ -63,11 +122,62 @@ def clean_build():
     """清理构建目录"""
     print("\n清理旧的构建文件...")
     dirs_to_clean = ["build", "dist", "__pycache__"]
-    
+
+    def _onerror(func, path, exc_info):
+        # 尝试去掉只读属性再重试一次
+        try:
+            if not os.access(path, os.W_OK):
+                os.chmod(path, stat.S_IWUSR)
+        except Exception:
+            pass
+        try:
+            func(path)
+        except PermissionError:
+            raise
+        except Exception:
+            pass
+
+    def _robust_rmtree(p: Path):
+        if not p.exists():
+            return True
+        # 若是 Windows 且目录下包含当前仍在运行的 exe，提示用户先关闭
+        if sys.platform.startswith('win') and 'dist' in p.as_posix():
+            exe = p / '流光下载器.exe'
+            if exe.exists():
+                try:
+                    # 尝试独占打开
+                    with open(exe, 'rb'):
+                        pass
+                except PermissionError:
+                    print(f"- 检测到 {exe} 可能仍在运行或被占用，请先关闭该程序再重试 (或 任务管理器 结束进程)。")
+                    return False
+        for attempt in range(3):
+            try:
+                shutil.rmtree(p, onerror=_onerror)
+                print(f"+ 已删除 {p}")
+                return True
+            except PermissionError as e:
+                print(f"! 第 {attempt+1} 次删除 {p} 失败: {e}")
+                # 等待杀毒/文件句柄释放
+                time.sleep(0.8)
+        # 仍失败：尝试重命名为 .stale 以便继续后续流程
+        try:
+            stale = p.with_name(p.name + f".stale_{int(time.time())}")
+            os.rename(p, stale)
+            print(f"! 无法直接删除 {p}，已重命名为 {stale}，可稍后手动删除。")
+            return True
+        except Exception as e:
+            print(f"- 最终仍无法处理 {p}: {e}")
+            return False
+
+    all_ok = True
     for dir_name in dirs_to_clean:
-        if Path(dir_name).exists():
-            shutil.rmtree(dir_name)
-            print(f"+ 已删除 {dir_name}")
+        p = Path(dir_name)
+        if p.exists():
+            ok = _robust_rmtree(p)
+            all_ok = all_ok and ok
+    if not all_ok:
+        print("[WARN] 部分旧目录未能完全删除，继续尝试打包 (如果打包失败请先手动清理后重试)。")
 
 def build_app():
     """构建应用"""
@@ -82,6 +192,25 @@ def build_app():
         print(f"\n+ 打包成功！")
         print(f"  输出位置: {exe_path.absolute()}")
         print(f"  文件大小: {exe_path.stat().st_size / 1024 / 1024:.1f} MB")
+        # 写入构建元数据 (无 git 时容错)
+        meta = {
+            'build_time': time.strftime('%Y-%m-%dT%H:%M:%S'),
+            'python': sys.version.split()[0]
+        }
+        # 获取 git 提交哈希
+        try:
+            proc = subprocess.run('git rev-parse --short HEAD', shell=True, capture_output=True)
+            if proc.returncode == 0:
+                meta['commit'] = proc.stdout.decode('utf-8','ignore').strip()
+        except Exception:
+            pass
+        try:
+            with open('dist/流光下载器/build_meta.json','w',encoding='utf-8') as mf:
+                import json as _json
+                _json.dump(meta, mf, ensure_ascii=False, indent=2)
+            print(f"+ 已写入 build_meta.json: {meta}")
+        except Exception as me:
+            print(f"- 写入 build_meta.json 失败: {me}")
         return True
     else:
         print("- 打包失败：找不到输出文件")
@@ -93,6 +222,9 @@ def main():
     print("流光下载器打包工具")
     print("=" * 50)
     
+    # 环境自检 (优先)
+    environment_self_check()
+
     # 检查依赖
     if not check_dependencies():
         print("\n- 依赖检查失败，请解决问题后重试")

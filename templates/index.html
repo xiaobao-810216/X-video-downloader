@@ -1,316 +1,1186 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <title>流光下载器 v3.1 (字幕增强版)</title>
-    <link rel="icon" href="{{ url_for('static', filename='icon.ico') }}">
+    <title>流光下载器</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="/static/video_downloader_logo.svg">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <style>
-        :root {
-            --bg-color: #15202b; --primary-color: #1d9bf0; --primary-hover: #1a8cd8;
-            --container-bg: #192734; --text-color: #E7E9EA; --text-secondary: #8899a6;
-            --border-color: #38444d; --success-color: #00ba7c; --error-color: #f4212e;
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: #f3f4f6;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-        body { margin: 0; padding: 20px; min-height: 100vh; background: var(--bg-color); display: flex; justify-content: center; align-items: flex-start; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; box-sizing: border-box; }
-        .container { width: 100%; max-width: 700px; text-align: center; }
-        .logo { width: 50px; height: 50px; margin-bottom: 15px; }
-        h1 { color: var(--text-color); font-size: 1.8em; margin-bottom: 20px; }
-        .input-container { background: var(--container-bg); padding: 25px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 20px; }
-        input[type="text"] { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border-color); background: var(--bg-color); border-radius: 8px; color: var(--text-color); font-size: 16px; box-sizing: border-box; transition: border-color 0.2s; }
-        input[type="text"]:focus { border-color: var(--primary-color); outline: none; }
-        .controls, .subtitle-controls { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
-        .subtitle-controls { margin-top: 15px; display: none; }
-        select { flex-grow: 1; padding: 10px; border-radius: 8px; background: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); font-size: 14px; }
-        button { background: var(--primary-color); color: #fff; border: none; padding: 12px 20px; border-radius: 9999px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s, opacity 0.2s; }
-        button:hover:not(:disabled) { background: var(--primary-hover); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        #statusMessage { margin-top: 15px; font-size: 14px; color: var(--text-secondary); min-height: 20px; }
-        #statusMessage.success { color: var(--success-color); }
-        #statusMessage.error { color: var(--error-color); }
-        
-        #playlistContainer { display: none; margin-top: 20px; background: var(--bg-color); border-radius: 12px; padding: 15px; max-height: 300px; overflow-y: auto; text-align: left; }
-        .playlist-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 5px; }
-        .playlist-header h3 { margin: 0; color: var(--text-color); font-size: 16px; }
-        .playlist-item { display: flex; align-items: center; padding: 8px 5px; border-radius: 6px; transition: background-color 0.2s; }
-        .playlist-item:hover { background-color: var(--container-bg); }
-        .playlist-item input[type="checkbox"] { margin-right: 12px; width: 18px; height: 18px; }
-        .playlist-item label { color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        #queueContainer { margin-top: 20px; text-align: left; }
-        .queue-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .queue-header h2 { color: var(--text-color); margin: 0; }
-        #queueList { list-style: none; padding: 0; margin: 0; }
-        .queue-item { background: var(--container-bg); padding: 15px; border-radius: 12px; margin-bottom: 10px; }
-        .queue-item-info { display: flex; justify-content: space-between; align-items: center; }
-        .queue-item-title { color: var(--text-color); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
-        .queue-item-status { font-size: 13px; padding: 4px 8px; border-radius: 6px; color: #fff; }
-        .status-queued { background-color: var(--text-secondary); }
-        .status-downloading { background-color: var(--primary-color); }
-        .status-merging { background-color: #ffa726; }
-        .status-finished { background-color: var(--success-color); }
-        .status-error { background-color: var(--error-color); }
-        .progress-bar { margin-top: 10px; height: 6px; background-color: var(--border-color); border-radius: 3px; overflow: hidden; }
-        .progress-fill { height: 100%; background-color: var(--primary-color); width: 0%; transition: width 0.3s ease-out; }
-        .error-message { margin-top: 8px; font-size: 12px; color: var(--error-color); }
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+            z-index: 1000;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 160px 40px 40px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        h1 {
+            color: #1d9bf0;
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        .input-container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .fetch-btn {
+            background: #1d9bf0;
+            color: #fff;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .fetch-btn:hover {
+            background: #1a8cd8;
+        }
+
+        .fetch-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #d1d5db;
+            background: #ffffff;
+            border-radius: 10px;
+            color: #374151;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .fetch-btn {
+            background: #1d9bf0;
+            color: #fff;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .fetch-btn:hover {
+            background: #1a8cd8;
+        }
+
+        .fetch-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        input[type="text"]:focus {
+            border-color: #1d9bf0;
+            outline: none;
+        }
+
+        .options-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .option-group {
+            flex: 1;
+        }
+
+        .download-group {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .option-group label {
+            display: block;
+            color: #374151;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .subtitle-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .subtitle-btn {
+            background: #1d9bf0;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .subtitle-btn:hover {
+            background: #1a8cd8;
+        }
+
+        .subtitle-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        select, .radio-group {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #d1d5db;
+            background: #ffffff;
+            border-radius: 8px;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        select:focus {
+            border-color: #1d9bf0;
+            outline: none;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 10px;
+            padding: 0;
+            border: none;
+            background: none;
+        }
+
+        .radio-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 10px;
+            background: #f9fafb;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            color: #374151;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            background: #1d9bf0;
+            border-color: #1d9bf0;
+        }
+
+        .radio-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            padding: 0;
+            border: none;
+            background: none;
+        }
+
+        .download-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .download-btn {
+            flex: 1;
+            background: #1d9bf0;
+            color: #fff;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .download-btn:hover {
+            background: #1a8cd8;
+        }
+
+        .download-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        #progress {
+            margin-top: 20px;
+            display: none;
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            border: 1px solid #e5e7eb;
+        }
+
+        .progress-header {
+            margin-bottom: 10px;
+        }
+
+        .progress-title {
+            color: #374151;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .progress-url {
+            color: #1d9bf0;
+            font-size: 12px;
+            word-break: break-all;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #192734;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1d9bf0, #00d4aa);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .progress-status {
+            color: #374151;
+            font-weight: bold;
+        }
+
+        .progress-details {
+            color: #8899a6;
+            display: flex;
+            gap: 15px;
+        }
+
+        .progress-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .cancel-btn {
+            background: #ff4757;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .cancel-btn:hover {
+            background: #ff3742;
+        }
+
+        .video-info {
+            display: none;
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: left;
+            border: 1px solid #e5e7eb;
+        }
+
+        .video-info h3 {
+            color: #1d9bf0;
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+
+        .video-info p {
+            color: #374151;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .quality-section {
+            display: flex;
+        }
+
+        .subtitle-section {
+            margin-top: 20px;
+        }
+
+        .progress-section {
+            margin-top: 20px;
+        }
+
+        .log-section {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .log-section h4 {
+            color: #1d9bf0;
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .log-title {
+            color: #1d9bf0;
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .log-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #8899a6;
+        }
+
+        .log-container {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 11px;
+            color: #374151;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .clear-btn {
+            background: #6b7280;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .clear-btn:hover {
+            background: #4b5563;
+        }
+
+        .clear-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .start-text {
+            color: #8899a6;
+            font-size: 16px;
+            margin-top: 30px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23E7E9EA' d='M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z'/%3E%3C/svg%3E" class="logo" alt="X Logo">
-        <h1>流光下载器</h1>
-        
-        <div class="input-container">
-            <input type="text" id="videoUrl" placeholder="粘贴视频或播放列表链接..." required>
-            <div class="controls">
-                <select id="qualitySelect">
-                    <option value="best">🎯 高质量 (1080p)</option>
-                    <option value="fast">⚡ 快速 (720p)</option>
-                </select>
-                <button id="addVideoButton" disabled>添加视频到队列</button>
+        <!-- 顶部Logo和标题 -->
+        <div class="header">
+            <div class="header-content">
+                <img src="/static/video_downloader_logo.svg" class="logo" alt="流光下载器 Logo">
+                <h1>流光下载器</h1>
             </div>
-            <div class="subtitle-controls" id="subtitleControls">
-                <select id="subtitleSelect"></select>
-                <button id="addSubsButton" disabled>添加字幕到队列</button>
-            </div>
-            <div id="statusMessage">输入链接以开始</div>
         </div>
 
-        <div id="playlistContainer">
-            <div class="playlist-header">
-                <h3 id="playlistTitle"></h3>
-                <div>
-                    <input type="checkbox" id="selectAllCheckbox" title="全选/全不选">
-                    <label for="selectAllCheckbox">全选</label>
+        <!-- 主要输入区域 -->
+        <div class="input-container">
+            <div class="input-row">
+                <input type="text" id="videoUrl" placeholder="粘贴视频或播放列表链接..." required>
+            </div>
+
+            <div class="video-info" id="videoInfo">
+                <h3 id="videoTitle">视频标题</h3>
+                <p id="videoDetails">详细信息</p>
+            </div>
+
+            <div class="options-row">
+                <div class="option-group">
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="merged" name="downloadMode" value="merged" checked>
+                            <label for="merged">📹 合并</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="video" name="downloadMode" value="video">
+                            <label for="video">🎬 仅视频</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="audio" name="downloadMode" value="audio">
+                            <label for="audio">🎵 仅音频</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="download-group">
+                    <button class="download-btn" onclick="downloadMedia()">📥 下载媒体</button>
                 </div>
             </div>
-            <div id="playlistItems"></div>
+
+            <div class="options-row quality-section" id="qualitySection">
+                <div class="option-group">
+                    <label for="quality">质量选择</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="best" name="quality" value="best" checked>
+                            <label for="best">🧠 自动推荐</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 字幕选择区域 -->
+            <div class="subtitle-section">
+                <div class="options-row">
+                    <div class="option-group">
+                        <label for="subtitles" id="subtitlesLabel">字幕选择</label>
+                        <div class="subtitle-row">
+                            <select id="subtitles">
+                                <option value="">无字幕</option>
+                            </select>
+                            <button class="subtitle-btn" onclick="downloadSubtitles()">字幕下载</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 下载进度区域 -->
+            <div class="progress-section">
+                <div id="progress" style="display: none;">
+                    <div class="progress-header">
+                        <div class="progress-title" id="progressTitle">下载队列</div>
+                        <div class="progress-url" id="progressUrl"></div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <div class="progress-status" id="statusText">准备下载...</div>
+                        <div class="progress-details">
+                            <span id="progressPercent">0.0%</span>
+                            <span id="remainingTime">--:--</span>
+                        </div>
+                    </div>
+                    <div class="progress-actions">
+                        <button class="cancel-btn" onclick="cancelDownload()">取消</button>
+                    </div>
+                </div>
+
+                <!-- 日志区域 -->
+                <div class="log-section">
+                    <div class="log-header">
+                        <h4 class="log-title">下载日志</h4>
+                        <div class="log-actions">
+                            <button class="clear-btn" id="toggleLogBtn" onclick="toggleLogVisibility()">显示日志</button>
+                            <button class="clear-btn" onclick="clearLogs()">🗑️ 清理日志</button>
+                        </div>
+                    </div>
+                    <div id="logContainer" class="log-container" style="display: none;"></div>
+                    <div class="log-stats-container" style="text-align: right; margin-top: 5px;">
+                         <span id="logStats" style="font-size: 12px; color: #8899a6;">等待下载...</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div id="queueContainer">
-            <div class="queue-header">
-                <h2>下载队列</h2>
-                <button id="clearFinishedButton" style="font-size: 12px; padding: 6px 12px; background-color: var(--text-secondary);">清除已完成</button>
-            </div>
-            <ul id="queueList"></ul>
-        </div>
+        <div class="start-text">输入链接以开始</div>
     </div>
 
-<script>
-    const videoUrlInput = document.getElementById('videoUrl');
-    const qualitySelect = document.getElementById('qualitySelect');
-    const addVideoButton = document.getElementById('addVideoButton');
-    const subtitleControls = document.getElementById('subtitleControls');
-    const subtitleSelect = document.getElementById('subtitleSelect');
-    const addSubsButton = document.getElementById('addSubsButton');
-    const statusMessage = document.getElementById('statusMessage');
-    
-    const playlistContainer = document.getElementById('playlistContainer');
-    const playlistTitle = document.getElementById('playlistTitle');
-    const playlistItems = document.getElementById('playlistItems');
-    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    <script>
+        let currentVideoInfo = null;
+        let currentEventSource = null;
+        let currentTaskId = null;
+        let downloadStartTime = null;
+        const MAX_LOG_LINES = 500;
 
-    const queueList = document.getElementById('queueList');
-    const clearFinishedButton = document.getElementById('clearFinishedButton');
+        // 当URL输入框失去焦点时，获取视频信息
+        document.getElementById('videoUrl').addEventListener('blur', function() {
+            const url = this.value.trim();
+            if (url) {
+                fetchVideoInfo(url);
+            }
+        });
 
-    let fetchInfoTimeout;
-    let currentInfo = null;
+        // 当输入框内容变化时，也尝试获取信息（可选）
+        document.getElementById('videoUrl').addEventListener('input', function() {
+            const url = this.value.trim();
+            // 如果URL看起来是完整的（包含http/https），立即获取信息
+            if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+                // 延迟一点时间，避免输入过程中频繁请求
+                clearTimeout(this.inputTimeout);
+                this.inputTimeout = setTimeout(() => {
+                    fetchVideoInfo(url);
+                }, 800);
+            }
+        });
 
-    // --- Event Listeners ---
-    videoUrlInput.addEventListener('input', () => {
-        clearTimeout(fetchInfoTimeout);
-        resetUI();
-        const url = videoUrlInput.value.trim();
-        if (isValidUrl(url)) {
-            statusMessage.textContent = '正在检查链接...';
-            statusMessage.className = '';
-            fetchInfoTimeout = setTimeout(() => fetchVideoInfo(url), 500);
-        }
-    });
-
-    addVideoButton.addEventListener('click', () => addToQueue('video'));
-    addSubsButton.addEventListener('click', () => addToQueue('subtitle'));
-
-    subtitleSelect.addEventListener('change', () => {
-        const hasSubs = subtitleSelect.value && subtitleSelect.value !== 'none';
-        addSubsButton.disabled = !hasSubs;
-    });
-
-    selectAllCheckbox.addEventListener('change', (e) => {
-        const checkboxes = playlistItems.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(checkbox => checkbox.checked = e.target.checked);
-        updateButtonState();
-    });
-
-    clearFinishedButton.addEventListener('click', () => {
-        fetch('/clear_finished', { method: 'POST' });
-    });
-
-    // --- Core Logic ---
-    function addToQueue(taskType) {
-        if (!currentInfo) return;
-        
-        let videosToAdd = [];
-        if (currentInfo.type === 'playlist') {
-            const checkedBoxes = playlistItems.querySelectorAll('input[type="checkbox"]:checked');
-            checkedBoxes.forEach(box => {
-                // 确保能从原始数据中找到对���的视频，并获取其完整的URL
-                const videoData = currentInfo.videos.find(v => v.id === box.dataset.id);
-                if (videoData && videoData.url) { // 确保URL存在
-                    videosToAdd.push(videoData);
+        // 当下载模式改变时，更新质量选项
+        document.querySelectorAll('input[name="downloadMode"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (currentVideoInfo) {
+                    updateQualityOptions(currentVideoInfo.formats || []);
                 }
             });
-        } else {
-            // 确保单个视频的URL也被正确传递
-            if (currentInfo.url) { // 确保URL存在
-                videosToAdd.push({ id: currentInfo.id, url: currentInfo.url, title: currentInfo.title });
+        });
+
+        async function fetchVideoInfo(url) {
+            if (!url) {
+                alert('请输入视频链接');
+                return;
+            }
+
+            // 显示加载状态
+            const inputField = document.getElementById('videoUrl');
+            const originalPlaceholder = inputField.placeholder;
+            inputField.placeholder = '正在获取视频信息...';
+
+            try {
+                const response = await fetch('/api/info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error('获取视频信息失败:', data.error);
+                    alert('获取视频信息失败: ' + data.error);
+                    hideVideoSections();
+                    return;
+                }
+
+                currentVideoInfo = data;
+
+                // 显示视频信息
+                displayVideoInfo(data);
+
+                // 更新质量选项
+                updateQualityOptions(data.formats || []);
+
+                // 更新字幕选项
+                updateSubtitleOptions(data.subtitles || [], data.auto_subtitles || []);
+
+                // 显示质量和字幕部分
+                showVideoSections();
+            } catch (error) {
+                console.error('获取视频信息出错:', error);
+                alert('获取视频信息出错，请检查网络或链接');
+                hideVideoSections();
+            } finally {
+                inputField.placeholder = originalPlaceholder;
             }
         }
 
-        if (videosToAdd.length > 0) {
-            const payload = {
-                videos: videosToAdd,
-                task_type: taskType,
-                quality: qualitySelect.value,
-                sub_lang: subtitleSelect.value
+        function displayVideoInfo(data) {
+            const videoInfo = document.getElementById('videoInfo');
+            const title = document.getElementById('videoTitle');
+            const details = document.getElementById('videoDetails');
+
+            title.textContent = data.title || '未知标题';
+            details.textContent = `上传者: ${data.uploader || '未知'} | 时长: ${formatDuration(data.duration)} | 最高质量: ${data.max_height || '未知'}p`;
+
+            videoInfo.style.display = 'block';
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return '未知';
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            if (hours > 0) {
+                return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${minutes}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateQualityOptions(formats) {
+            const qualityContainer = document.querySelector('#qualitySection .radio-group');
+            const downloadMode = document.querySelector('input[name="downloadMode"]:checked').value;
+
+            // 清空现有选项
+            qualityContainer.innerHTML = '';
+
+            // 总是添加自动推荐选项
+            const bestOption = document.createElement('div');
+            bestOption.className = 'radio-option';
+            bestOption.innerHTML = `
+                <input type="radio" id="best" name="quality" value="best" checked>
+                <label for="best">🧠 自动推荐</label>
+            `;
+            qualityContainer.appendChild(bestOption);
+
+            // 如果是音频模式，显示音频质量选项
+            if (downloadMode === 'audio') {
+                // 收集音频格式，使用Map来确保唯一性
+                const audioFormats = new Map();
+                formats.forEach(format => {
+                    if (format.acodec && format.acodec !== 'none') {
+                        const quality = format.abr || format.audio_quality || '未知';
+                        if (quality !== '未知' && !audioFormats.has(quality)) {
+                            audioFormats.set(quality, quality);
+                        }
+                    }
+                });
+
+                // 如果没有找到音频格式，添加默认选项
+                if (audioFormats.size === 0) {
+                    ['320k', '256k', '192k', '128k', '96k', '64k'].forEach(quality => {
+                        const option = document.createElement('div');
+                        option.className = 'radio-option';
+                        option.innerHTML = `
+                            <input type="radio" id="audio_${quality}" name="quality" value="${quality}">
+                            <label for="audio_${quality}">${quality}</label>
+                        `;
+                        qualityContainer.appendChild(option);
+                    });
+                } else {
+                    // 排序并添加音频质量选项
+                    Array.from(audioFormats.keys()).sort((a, b) => {
+                        const aNum = parseInt(a);
+                        const bNum = parseInt(b);
+                        return bNum - aNum;
+                    }).forEach(quality => {
+                        const option = document.createElement('div');
+                        option.className = 'radio-option';
+                        option.innerHTML = `
+                            <input type="radio" id="audio_${quality}" name="quality" value="${quality}">
+                            <label for="audio_${quality}">${quality}</label>
+                        `;
+                        qualityContainer.appendChild(option);
+                    });
+                }
+            } else {
+                // 视频模式：收集所有可用的有效高度，使用Map确保唯一性
+                const heights = new Map();
+                formats.forEach(format => {
+                    const height = format.effective_height || format.height;
+                    if (height && height > 0) {  // 显示所有可用质量
+                        if (!heights.has(height)) {
+                            heights.set(height, height);
+                        }
+                    }
+                });
+
+                // 排序并添加选项（不再添加默认选项）
+                Array.from(heights.keys()).sort((a, b) => b - a).forEach(height => {
+                    const option = document.createElement('div');
+                    option.className = 'radio-option';
+                    let label = `${height}p`;
+                    if (height >= 4320) label = '8K';
+                    else if (height >= 2160) label = '4K';
+                    else if (height >= 1080) label = '1080P';
+                    else if (height >= 720) label = '720P';
+                    else if (height >= 480) label = '480P';
+                    else if (height >= 360) label = '360P';
+                    else label = `${height}p (低清)`;  // 对于240p等低质量
+
+                    option.innerHTML = `
+                        <input type="radio" id="q${height}" name="quality" value="${height}">
+                        <label for="q${height}">${label}</label>
+                    `;
+                    qualityContainer.appendChild(option);
+                });
+
+                // 如果没有找到任何质量选项，添加提示
+                if (heights.size === 0) {
+                    const noQualityOption = document.createElement('div');
+                    noQualityOption.className = 'radio-option';
+                    noQualityOption.innerHTML = `
+                        <input type="radio" id="no_quality" name="quality" value="best" checked disabled>
+                        <label for="no_quality">无可用质量选项 (使用最佳)</label>
+                    `;
+                    qualityContainer.appendChild(noQualityOption);
+                }
+            }
+        }
+
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const logStats = document.getElementById('logStats');
+            const timestamp = new Date().toLocaleTimeString();
+
+            // 创建日志条目
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.innerHTML = `<span class="log-time">[${timestamp}]</span> <span class="log-message">${message}</span>`;
+
+            // 添加到日志容器
+            logContainer.appendChild(logEntry);
+            // 截断过长日志
+            while (logContainer.children.length > MAX_LOG_LINES) {
+                logContainer.removeChild(logContainer.firstChild);
+            }
+            logContainer.scrollTop = logContainer.scrollHeight;
+
+            // 更新日志统计
+            const entryCount = logContainer.children.length;
+            const errorCount = logContainer.querySelectorAll('.log-error').length;
+            const warningCount = logContainer.querySelectorAll('.log-warning').length;
+
+            let statsText = `共 ${entryCount} 条`;
+            if (errorCount > 0) statsText += `, 错误 ${errorCount}`;
+            if (warningCount > 0) statsText += `, 警告 ${warningCount}`;
+
+            logStats.textContent = statsText;
+        }
+
+        function clearLogs() {
+            // 清理日志内容
+            document.getElementById('logContainer').textContent = '';
+
+            // 清理下载状态显示
+            const statusText = document.getElementById('statusText');
+            const progressPercent = document.getElementById('progressPercent');
+            const remainingTime = document.getElementById('remainingTime');
+
+            // 重置为初始状态
+            statusText.textContent = '等待下载...';
+            progressPercent.textContent = '0.0%';
+            remainingTime.textContent = '--:--';
+
+            // 隐藏进度条
+            const progressContainer = document.getElementById('progress');
+            progressContainer.style.display = 'none';
+
+            // 重置进度条
+            const progressBar = document.querySelector('.progress-fill');
+            progressBar.style.width = '0%';
+
+            // 重置下载按钮状态
+            const downloadButton = document.querySelector('.download-btn');
+            downloadButton.disabled = false;
+            downloadButton.innerHTML = '📥 下载媒体';
+
+            // 清理字幕按钮状态
+            const subtitleButton = document.querySelector('.subtitle-btn');
+            if (subtitleButton) {
+                subtitleButton.disabled = false;
+                subtitleButton.innerHTML = '字幕下载';
+            }
+
+            // 清理视频信息显示
+            const videoInfo = document.getElementById('videoInfo');
+            const videoTitle = document.getElementById('videoTitle');
+            const videoDetails = document.getElementById('videoDetails');
+
+            if (videoInfo) {
+                videoInfo.style.display = 'none';
+                videoTitle.textContent = '视频标题';
+                videoDetails.textContent = '详细信息';
+            }
+
+            // 清理字幕选择器
+            const subtitleSelect = document.getElementById('subtitles');
+            if (subtitleSelect) {
+                subtitleSelect.innerHTML = '<option value="">无字幕</option>';
+            }
+
+            // 清理URL输入框
+            const videoUrlInput = document.getElementById('videoUrl');
+            if (videoUrlInput) {
+                videoUrlInput.value = '';
+                videoUrlInput.placeholder = '粘贴视频或播放列表链接...';
+            }
+
+            // 清理日志统计
+            const logStats = document.getElementById('logStats');
+            if (logStats) {
+                logStats.textContent = '等待下载...';
+            }
+
+            // 关闭可能存在的下载连接
+            if (currentEventSource) {
+                currentEventSource.close();
+                currentEventSource = null;
+            }
+
+            // 重置下载统计
+            downloadStartTime = null;
+            downloadStats = {
+                speed: 0,
+                downloaded: 0,
+                total: 0,
+                remainingTime: 0
             };
 
-            fetch('/add_to_queue', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.error) {
-                    statusMessage.textContent = `错误: ${data.error}`;
-                    statusMessage.className = 'error';
-                } else {
-                    statusMessage.textContent = data.message || '任务已添加';
-                    statusMessage.className = 'success';
-                }
-                // Don't reset UI, so user can add other tasks from the same URL
-            });
+            addLog('已清理所有下载记录和状态');
         }
-    }
 
-    // --- UI Update Functions ---
-    function resetUI() {
-        playlistContainer.style.display = 'none';
-        subtitleControls.style.display = 'none';
-        playlistItems.innerHTML = '';
-        addVideoButton.disabled = true;
-        addSubsButton.disabled = true;
-        currentInfo = null;
-    }
-
-    function updateButtonState() {
-        let enabled = false;
-        if (currentInfo.type === 'playlist') {
-            const anyChecked = playlistItems.querySelector('input[type="checkbox"]:checked');
-            enabled = !!anyChecked;
-        } else {
-            enabled = true;
+        function toggleLogVisibility() {
+            const logContainer = document.getElementById('logContainer');
+            const toggleBtn = document.getElementById('toggleLogBtn');
+            if (logContainer.style.display === 'none') {
+                logContainer.style.display = 'block';
+                toggleBtn.textContent = '隐藏日志';
+            } else {
+                logContainer.style.display = 'none';
+                toggleBtn.textContent = '显示日志';
+            }
         }
-        addVideoButton.disabled = !enabled;
-        const hasSubs = subtitleSelect.value && subtitleSelect.value !== 'none';
-        addSubsButton.disabled = !enabled || !hasSubs;
-    }
 
-    function renderPlaylist(info) {
-        playlistTitle.textContent = info.title.substring(0, 50) + (info.title.length > 50 ? '...' : '');
-        playlistItems.innerHTML = '';
-        info.videos.forEach(video => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'playlist-item';
-            itemDiv.innerHTML = `
-                <input type="checkbox" data-id="${video.id}" checked>
-                <label title="${video.title}">${video.title}</label>
-            `;
-            itemDiv.querySelector('input').addEventListener('change', updateButtonState);
-            playlistItems.appendChild(itemDiv);
-        });
-        playlistContainer.style.display = 'block';
-        selectAllCheckbox.checked = true;
-    }
+        function updateSubtitleOptions(subtitles, autoSubtitles) {
+            const subtitleSelect = document.getElementById('subtitles');
+            const subtitlesLabel = document.getElementById('subtitlesLabel');
+            const hasSubtitles = (subtitles && subtitles.length > 0) || (autoSubtitles && autoSubtitles.length > 0);
 
-    function renderSubtitles(subOptions) {
-        subtitleSelect.innerHTML = '<option value="none">选择字幕...</option>';
-        if (subOptions && subOptions.length > 0) {
-            subOptions.forEach(option => {
+            // 重置UI状态
+            subtitleSelect.innerHTML = '';
+            subtitlesLabel.style.color = ''; // 恢复默认颜色
+
+            if (hasSubtitles) {
+                // 有可用字幕，高亮标签并更新默认文本
+                subtitlesLabel.style.color = '#1d9bf0';
+                subtitleSelect.innerHTML = '<option value="">有可用字幕</option>';
+            } else {
+                // 没有字幕
+                subtitleSelect.innerHTML = '<option value="">无字幕</option>';
+            }
+
+            // 填充人工字幕
+            (subtitles || []).forEach(sub => {
                 const opt = document.createElement('option');
-                opt.value = option.value;
-                opt.textContent = option.text;
+                opt.value = sub.lang;
+                opt.textContent = `${sub.lang} (人工)`;
                 subtitleSelect.appendChild(opt);
             });
-            subtitleControls.style.display = 'flex';
-        } else {
-            subtitleControls.style.display = 'none';
-        }
-    }
 
-    function renderQueue(tasks) {
-        queueList.innerHTML = '';
-        if (tasks.length === 0) {
-            queueList.innerHTML = '<li style="color: var(--text-secondary); text-align: center; padding: 20px;">队列为空</li>';
-            return;
-        }
-        tasks.forEach(task => {
-            const statusClass = `status-${task.status}`;
-            const statusText = { queued: '排队中', downloading: '下载中', merging: '处理中', finished: '已完成', error: '失败' }[task.status];
-            const li = document.createElement('li');
-            li.className = 'queue-item';
-            li.innerHTML = `
-                <div class="queue-item-info">
-                    <span class="queue-item-title" title="${task.title}">${task.title}</span>
-                    <span class="queue-item-status ${statusClass}">${statusText}</span>
-                </div>
-                ${(task.status === 'downloading' || task.status === 'merging' || task.status === 'finished') ? `<div class="progress-bar"><div class="progress-fill" style="width: ${task.progress || 0}%"></div></div>` : ''}
-                ${task.status === 'error' ? `<div class="error-message">${task.error_message || '未知错误'}</div>` : ''}
-            `;
-            queueList.appendChild(li);
-        });
-    }
-
-    // --- API Calls ---
-    function fetchVideoInfo(url) {
-        fetch(`/info?url=${encodeURIComponent(url)}`)
-            .then(response => {
-                if (!response.ok) throw new Error(`服务器错误: ${response.status}`);
-                return response.json();
-            })
-            .then(data => {
-                if (data.error) throw new Error(data.error);
-                
-                currentInfo = data;
-                statusMessage.textContent = `✅ 找到: ${data.title.substring(0, 50)}...`;
-                statusMessage.className = 'success';
-
-                if (data.type === 'playlist') {
-                    renderPlaylist(data);
-                    renderSubtitles([]); // Hide subs for playlists
-                } else {
-                    renderSubtitles(data.sub_options);
-                }
-                updateButtonState();
-            })
-            .catch(error => {
-                statusMessage.textContent = `错误: ${error.message}`;
-                statusMessage.className = 'error';
-                resetUI();
+            // 填充自动字幕
+            (autoSubtitles || []).forEach(sub => {
+                const opt = document.createElement('option');
+                opt.value = sub.lang;
+                opt.textContent = `${sub.lang} (自动)`;
+                subtitleSelect.appendChild(opt);
             });
-    }
+        }
 
-    function updateQueueStatus() {
-        fetch('/queue_status').then(res => res.json()).then(renderQueue);
-    }
+        function showVideoSections() {
+            document.getElementById('videoInfo').style.display = 'block';
+            document.getElementById('qualitySection').style.display = 'flex';
+        }
 
-    // --- Initialization ---
-    function isValidUrl(string) {
-        try { new URL(string); return true; } catch (_) { return false; }
-    }
+        function hideVideoSections() {
+            document.getElementById('videoInfo').style.display = 'none';
+            // 质量选择区域始终显示，不隐藏
+            // document.getElementById('qualitySection').style.display = 'none';
+        }
 
-    setInterval(updateQueueStatus, 1500);
-    updateQueueStatus();
-</script>
+        // 删除旧统计对象：后端暂未提供速度/ETA 直接字段
+
+        function mapQualityForBackend(raw) {
+            if (!raw) return 'best';
+            // 数字表示高度
+            if (/^\d+$/.test(raw)) return `height<=${raw}`;
+            const val = raw.toLowerCase();
+            if (val === '4k') return 'best4k';
+            if (val === '8k') return 'best8k';
+            return val; // best / fast / best4k / best8k / height<=X 等
+        }
+
+        function closeCurrentEventSource() {
+            if (currentEventSource) {
+                try { currentEventSource.close(); } catch(e) {}
+                currentEventSource = null;
+            }
+        }
+
+        function resetProgressUI() {
+            document.querySelector('.progress-fill').style.width = '0%';
+            document.getElementById('progressPercent').textContent = '0.0%';
+            document.getElementById('statusText').textContent = '准备中...';
+            document.getElementById('remainingTime').textContent = '--:--';
+        }
+
+        function updateStageStatus(stage, status) {
+            const statusText = document.getElementById('statusText');
+            let label = stage || status || '';
+            switch(label){
+                case 'queued': label = '队列中'; break;
+                case 'downloading': label = '下载中'; break;
+                case 'merging': label = '合并处理中'; break;
+                case 'finished': label = '完成'; break;
+                case 'error': label = '出错'; break;
+                default: break;
+            }
+            statusText.textContent = label;
+        }
+
+        function downloadMedia() {
+            const videoUrl = document.getElementById('videoUrl').value.trim();
+            if (!videoUrl) { alert('请输入视频链接'); return; }
+            const modeRaw = document.querySelector('input[name="downloadMode"]:checked').value;
+            let mode;
+            if (modeRaw === 'video') mode = 'video_only';
+            else if (modeRaw === 'audio') mode = 'audio_only';
+            else mode = 'merged';
+            const qualityRaw = document.querySelector('input[name="quality"]:checked').value;
+            const quality = mapQualityForBackend(qualityRaw);
+            const subtitles = document.getElementById('subtitles').value;
+            const progressContainer = document.getElementById('progress');
+            const progressBar = document.querySelector('.progress-fill');
+            const progressPercent = document.getElementById('progressPercent');
+            const remainingTime = document.getElementById('remainingTime');
+            const statusText = document.getElementById('statusText');
+            const downloadButton = document.querySelector('.download-btn');
+            const progressTitle = document.getElementById('progressTitle');
+            const progressUrl = document.getElementById('progressUrl');
+
+            closeCurrentEventSource();
+            resetProgressUI();
+            progressContainer.style.display = 'block';
+            downloadButton.disabled = true;
+            downloadButton.textContent = '初始化...';
+            progressTitle.textContent = '下载任务';
+            progressUrl.textContent = videoUrl;
+            addLog(`创建任务: mode=${mode} quality=${quality}`);
+
+            const params = new URLSearchParams();
+            params.set('url', videoUrl);
+            params.set('mode', mode);
+            params.set('quality', quality);
+            if (subtitles) params.set('subtitles', subtitles);
+            if (mode === 'audio_only' || mode === 'video_only') {
+                // no special flag
+            }
+
+            const sseUrl = `/api/stream_task?${params.toString()}`;
+            downloadStartTime = Date.now();
+            currentEventSource = new EventSource(sseUrl);
+
+            currentEventSource.onmessage = (ev) => {
+                if (!ev.data) return;
+                let data;
+                try { data = JSON.parse(ev.data); } catch(e){ return; }
+                if (data.error){
+                    addLog('任务出错: ' + data.error, 'error');
+                    updateStageStatus('error');
+                    downloadButton.disabled = false;
+                    downloadButton.textContent = '📥 下载媒体';
+                    closeCurrentEventSource();
+                    return;
+                }
+                if (data.task_id && !currentTaskId) {
+                    currentTaskId = data.task_id;
+                    addLog(`任务ID: ${currentTaskId}`);
+                }
+                if (data.type === 'log') {
+                    addLog(data.line);
+                } else if (data.type === 'status') {
+                    // 进度 & 阶段
+                    updateStageStatus(data.stage, data.status);
+                    if (typeof data.progress === 'number') {
+                        const pct = Math.min(100, Math.max(0, data.progress));
+                        progressBar.style.width = pct + '%';
+                        progressPercent.textContent = pct.toFixed(1) + '%';
+                        // 简单 ETA 估算
+                        const elapsed = (Date.now() - downloadStartTime)/1000;
+                        if (pct > 0 && pct < 100) {
+                            const remaining = elapsed * (100 - pct) / pct;
+                            const m = Math.floor(remaining / 60);
+                            const s = Math.floor(remaining % 60);
+                            remainingTime.textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                        } else if (pct >= 100) {
+                            remainingTime.textContent = '00:00';
+                        }
+                    }
+                    if (data.status === 'finished') {
+                        addLog('任务完成: ' + (data.file_path || '')); 
+                        progressBar.style.width = '100%';
+                        progressPercent.textContent = '100%';
+                        updateStageStatus('finished');
+                        remainingTime.textContent = '00:00';
+                        downloadButton.disabled = false;
+                        downloadButton.textContent = '📥 下载媒体';
+                        closeCurrentEventSource();
+                    } else if (data.status === 'error') {
+                        addLog('任务失败', 'error');
+                        downloadButton.disabled = false;
+                        downloadButton.textContent = '📥 下载媒体';
+                        closeCurrentEventSource();
+                    }
+                } else if (data.event === 'end') {
+                    // SSE结束
+                    closeCurrentEventSource();
+                    if (downloadButton.disabled) {
+                        downloadButton.disabled = false;
+                        downloadButton.textContent = '📥 下载媒体';
+                    }
+                }
+            };
+
+            currentEventSource.onerror = () => {
+                addLog('SSE 连接出错或中断', 'error');
+                downloadButton.disabled = false;
+                downloadButton.textContent = '📥 下载媒体';
+                updateStageStatus('error');
+                closeCurrentEventSource();
+            };
+        }
+
+        async function cancelDownload() {
+            if (currentTaskId) {
+                try {
+                    const resp = await fetch(`/api/tasks/${currentTaskId}/cancel`, {method:'POST'});
+                    const d = await resp.json();
+                    addLog('取消请求: ' + JSON.stringify(d));
+                } catch(e) {
+                    addLog('取消请求失败: ' + e, 'error');
+                }
+            }
+            closeCurrentEventSource();
+            const downloadButton = document.querySelector('.download-btn');
+            downloadButton.disabled = false;
+            downloadButton.textContent = '📥 下载媒体';
+            document.getElementById('statusText').textContent = '已取消';
+            document.getElementById('progressPercent').textContent = '已取消';
+            document.getElementById('remainingTime').textContent = '--:--';
+        }
+
+        function downloadSubtitles() {
+            const videoUrl = document.getElementById('videoUrl').value.trim();
+            const subtitles = document.getElementById('subtitles').value;
+            const btn = document.querySelector('.subtitle-btn');
+            if (!videoUrl) { alert('请输入视频链接'); return; }
+            if (!subtitles) { alert('请选择字幕语言'); return; }
+            closeCurrentEventSource();
+            resetProgressUI();
+            document.getElementById('progress').style.display = 'block';
+            btn.disabled = true; btn.textContent = '字幕任务中...';
+            const params = new URLSearchParams();
+            params.set('url', videoUrl); params.set('mode','merged'); params.set('subtitles', subtitles); params.set('subtitles_only','true'); params.set('quality','best');
+            const sseUrl = `/api/stream_task?${params.toString()}`;
+            downloadStartTime = Date.now();
+            currentEventSource = new EventSource(sseUrl);
+            addLog('创建字幕任务: ' + subtitles);
+            currentEventSource.onmessage = (ev)=>{
+                if (!ev.data) return; let data; try { data = JSON.parse(ev.data);} catch(e){return;}
+                if (data.error){ addLog('字幕任务出错: '+data.error,'error'); btn.disabled=false; btn.textContent='字幕下载'; closeCurrentEventSource(); return; }
+                if (data.type==='log'){ addLog(data.line); return; }
+                if (data.type==='status'){
+                    updateStageStatus(data.stage,data.status);
+                    if (typeof data.progress==='number') {
+                        const pct=Math.min(100,Math.max(0,data.progress));
+                        document.querySelector('.progress-fill').style.width=pct+'%';
+                        document.getElementById('progressPercent').textContent=pct.toFixed(1)+'%';
+                        if (pct>=100){ btn.disabled=false; btn.textContent='字幕下载'; closeCurrentEventSource(); }
+                    }
+                } else if (data.event==='end') {
+                    btn.disabled=false; btn.textContent='字幕下载'; closeCurrentEventSource();
+                }
+            };
+            currentEventSource.onerror = ()=>{ addLog('字幕 SSE 连接出错','error'); btn.disabled=false; btn.textContent='字幕下载'; closeCurrentEventSource(); };
+        }
+
+        // 移除 startDownload 旧实现（已废弃）
+    </script>
 </body>
 </html>

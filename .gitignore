@@ -6,3 +6,17 @@
 
 # Release folder (we only track the .zip inside it)
 /release/
+
+# Release artifact archives (do NOT commit large packaged zips to git history)
+*_Windows.zip
+流光下载器_*.zip
+*.zip
+
+# Build metadata (not for source control)
+build_meta.json
+
+# Local cookies file (do NOT commit real browser/exported cookies)
+cookies.txt
+
+# Provide an example file instead of real cookies
+cookies.example.txt
