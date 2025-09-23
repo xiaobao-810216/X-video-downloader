@@ -1,0 +1,14 @@
+{
+  "python.defaultInterpreterPath": "python",
+  // 提示 Pylance 在工作区根查找本地模块
+  "python.analysis.extraPaths": [
+    "./"
+  ],
+  "python.analysis.diagnosticMode": "workspace",
+  // 可选：显式关闭严格类型（如果大量第三方缺少 stub）
+  // "python.analysis.typeCheckingMode": "basic",
+  // 若你使用自定义 .env，可在此定义（可选）
+  "python.envFile": "${workspaceFolder}/.env",
+  // 避免不同平台路径大小写/空格问题建议保持 workspace 根启动
+  "python.terminal.activateEnvironment": true
+}

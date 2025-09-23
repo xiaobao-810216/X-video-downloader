@@ -13,6 +13,10 @@ import stat
 from pathlib import Path
 import importlib.util
 import ctypes
+try:
+    from version import APP_VERSION
+except Exception:
+    APP_VERSION = "0.0.0"
 
 # -------------------------------------------------------------
 # 环境自检：避免用意外的解释器 (例如 conda env) 打包导致 _ctypes 缺失
@@ -192,10 +196,107 @@ def build_app():
         print(f"\n+ 打包成功！")
         print(f"  输出位置: {exe_path.absolute()}")
         print(f"  文件大小: {exe_path.stat().st_size / 1024 / 1024:.1f} MB")
+        # ---------------------------------------------------------
+        # 资源完整性二次校验（某些环境下 PyInstaller datas 丢失兜底）
+        # ---------------------------------------------------------
+        dist_root = exe_path.parent
+        required_dirs = [
+            ('templates', 'templates'),
+            ('static', 'static'),
+            ('ffmpeg', 'ffmpeg'),
+            ('aria2', 'aria2'),
+        ]
+        required_files = [
+            ('yt-dlp.exe', 'yt-dlp.exe'),
+        ]
+        fixed_any = False
+        for src, rel in required_dirs:
+            target = dist_root / rel
+            if not target.exists():
+                if Path(src).exists():
+                    try:
+                        print(f"[资源校验] 缺失目录 {rel} -> 正在补拷贝...")
+                        if target.parent.exists():
+                            from shutil import copytree
+                            copytree(src, target)
+                            fixed_any = True
+                        else:
+                            print(f"[资源校验][WARN] 目标父目录不存在: {target.parent}")
+                    except Exception as ce:
+                        print(f"[资源校验][ERROR] 复制 {src} 失败: {ce}")
+                else:
+                    print(f"[资源校验][WARN] 源目录缺失: {src} (未补拷贝)")
+        for src, rel in required_files:
+            target = dist_root / rel
+            if not target.exists():
+                if Path(src).exists():
+                    try:
+                        print(f"[资源校验] 缺失文件 {rel} -> 正在补拷贝...")
+                        from shutil import copy2
+                        copy2(src, target)
+                        fixed_any = True
+                    except Exception as fe:
+                        print(f"[资源校验][ERROR] 复制 {src} 失败: {fe}")
+                else:
+                    print(f"[资源校验][WARN] 源文件缺失: {src} (未补拷贝)")
+        if fixed_any:
+            # 再次确认关键模板文件存在
+            probe_tpl = dist_root / 'templates' / 'index.html'
+            print(f"[资源校验] templates/index.html 存在: {probe_tpl.exists()}")
+        else:
+            print("[资源校验] 所有声明资源在首次打包输出中已存在。")
+
+        # ---------------------------------------------------------
+        # libffi 兜底: _ctypes 早期加载需要找到 ffi / libffi-7.dll
+        # 逻辑: 若 dist 根目录没有 *ffi*.dll，则从 sys.base_prefix/DLLs 复制
+        # 并创建一个 ffi.dll 的别名 (Windows 某些调用路径直接寻找 ffi.dll)
+        # ---------------------------------------------------------
+        try:
+            dll_dir = Path(sys.base_prefix) / 'DLLs'
+            candidates_order = ['libffi-8.dll','libffi-7.dll','libffi.dll','ffi.dll']
+            dist_has = any(list(dist_root.glob('*ffi*.dll')))
+            if not dist_has:
+                picked = None
+                for name in candidates_order:
+                    src = dll_dir / name
+                    if src.exists():
+                        picked = src
+                        break
+                if picked:
+                    target_primary = dist_root / picked.name
+                    shutil.copy2(picked, target_primary)
+                    print(f"[libffi] 已复制 {picked.name} -> dist 根目录")
+                    # 若没有 ffi.dll 且 picked 不是 ffi.dll，再复制一个别名
+                    alias = dist_root / 'ffi.dll'
+                    if not alias.exists():
+                        try:
+                            shutil.copy2(picked, alias)
+                            print("[libffi] 已创建别名 ffi.dll")
+                        except Exception as ce:
+                            print(f"[libffi][WARN] 创建 ffi.dll 失败: {ce}")
+                else:
+                    print("[libffi][WARN] 未在当前 Python DLLs 目录找到任何 libffi*.dll")
+            else:
+                # 确保 ffi.dll 别名存在 (避免只存在 libffi-7.dll 的情况)
+                alias = dist_root / 'ffi.dll'
+                if not alias.exists():
+                    # 找已有的 libffi* 复制一个
+                    existing = list(dist_root.glob('libffi-*.dll')) + list(dist_root.glob('libffi.dll'))
+                    if existing:
+                        try:
+                            shutil.copy2(existing[0], alias)
+                            print("[libffi] 已补充别名 ffi.dll")
+                        except Exception as ce:
+                            print(f"[libffi][WARN] 补充别名失败: {ce}")
+                print("[libffi] dist 根目录已存在 ffi 相关 DLL")
+        except Exception as e:
+            print(f"[libffi][ERROR] 处理 libffi 兜底时出错: {e}")
+
         # 写入构建元数据 (无 git 时容错)
         meta = {
             'build_time': time.strftime('%Y-%m-%dT%H:%M:%S'),
-            'python': sys.version.split()[0]
+            'python': sys.version.split()[0],
+            'version': APP_VERSION
         }
         # 获取 git 提交哈希
         try:
@@ -219,7 +320,7 @@ def build_app():
 def main():
     """主函数"""
     print("=" * 50)
-    print("流光下载器打包工具")
+    print(f"流光下载器打包工具 (版本 {APP_VERSION})")
     print("=" * 50)
     
     # 环境自检 (优先)

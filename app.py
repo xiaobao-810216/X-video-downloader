@@ -7,15 +7,13 @@ from threading import Timer
 from collections import OrderedDict
 from functools import wraps
 from urllib.parse import urlparse
-import config
 import json as _json
 
-# --- 导入配置 ---
+# --- 导入配置 (单次导入，避免重复导致的 Pylance 假警告) ---
 try:
-    import config
+    import config  # 本地模块，需保证启动时工作目录包含项目根
 except ImportError:
-    # 如果 config.py 不存在，提供一个引导错误
-    print("错误：配置文件 config.py 未找到。请确保该文件存在于应用根目录。")
+    print("错误：配置文件 config.py 未找到。请确保该文件与 app.py 位于同一目录。")
     sys.exit(1)
 
 # --- 主应用代码 ---
@@ -305,10 +303,53 @@ except Exception as _im_err:
     classify_error = None
     tasks_mod = None
 
+# Flask 3.x 已移除 before_first_request，改为“导入阶段尝试 + before_request 一次性”策略
+_TM_INIT_DONE = False
+_TM_INIT_LOCK = threading.Lock()
+
+def _ensure_task_manager_initialized():
+    global _TM_INIT_DONE
+    if _TM_INIT_DONE:
+        return
+    with _TM_INIT_LOCK:
+        if _TM_INIT_DONE:
+            return
+        try:
+            tm = _get_task_manager()
+            if tm is None and tasks_mod and getattr(tasks_mod, 'init_task_manager', None):
+                tasks_mod.init_task_manager(config.YTDLP_PATH, get_ffmpeg_path, config.DOWNLOAD_DIR, config.COOKIES_FILE)
+                tm = _get_task_manager()
+            if tm:
+                logger.info("[INIT] TaskManager 就绪 (lazy one-time)")
+                _TM_INIT_DONE = True
+            else:
+                logger.error("[INIT] TaskManager 初始化失败 (lazy one-time)")
+        except Exception as _e:
+            logger.error(f"[INIT] TaskManager 初始化异常: {_e}")
+
+# 1) 导入阶段先尝试一次（适用于 run.py 方式）
+_ensure_task_manager_initialized()
+
+# 2) 作为兜底，在每次请求前检查一次（成本极低）
+@app.before_request  # type: ignore[attr-defined]
+def _tm_guard():
+    if not _TM_INIT_DONE:
+        _ensure_task_manager_initialized()
+
 # 统一获取 TaskManager，避免 from x import var 的绑定时序问题
 def _get_task_manager():
     try:
-        return tasks_mod.task_manager if tasks_mod else None
+        tm = tasks_mod.task_manager if (tasks_mod and getattr(tasks_mod, 'task_manager', None) is not None) else None
+        if tm is None and tasks_mod and getattr(tasks_mod, 'init_task_manager', None):
+            try:
+                logger.warning("[LAZY_INIT] TaskManager 未在启动阶段创建，进行延迟初始化…")
+                tm = tasks_mod.init_task_manager(config.YTDLP_PATH, get_ffmpeg_path, config.DOWNLOAD_DIR, config.COOKIES_FILE)
+                if tm:
+                    logger.info("[LAZY_INIT] TaskManager 延迟初始化成功")
+            except Exception as _late_err:
+                logger.error(f"[LAZY_INIT] TaskManager 延迟初始化失败: {_late_err}")
+                tm = None
+        return tm
     except Exception:
         return None
 
@@ -821,11 +862,26 @@ def api_stream_task():
     url = request.args.get('url','').strip()
     mode = request.args.get('mode','merged').strip()
     quality = request.args.get('quality','best').strip()
+    # 新增: 直接传递格式 ID (来自前端 quality_pairs)
+    video_format = request.args.get('video_format')
+    audio_format = request.args.get('audio_format')
     subtitles = request.args.get('subtitles')
     subtitles_only = request.args.get('subtitles_only','false').lower() in ('1','true','yes') or mode == 'subtitles'
     if mode == 'subtitles':  # 兼容旧前端值
         mode = 'merged'  # TaskManager 内部通过 subtitles_only 判断
         subtitles_only = True
+    # 新增：meta (0/1/off/sidecar/folder)。前端简单勾选 -> 1=sidecar, 0=off
+    meta_param = request.args.get('meta')  # 可能是 '0','1','off','sidecar','folder'
+    meta_mode = None
+    if meta_param:
+        mp = meta_param.strip().lower()
+        if mp in ('0','off','false','no'):
+            meta_mode = 'off'
+        elif mp in ('1','yes','true','on','sidecar'):
+            meta_mode = 'sidecar'
+        elif mp in ('folder','dir','directory'):
+            meta_mode = 'folder'
+        # 其它值忽略，继续使用环境策略
 
     if not url:
         return Response('data: {"error":"缺少 url"}\n\n', mimetype='text/event-stream')
@@ -837,7 +893,9 @@ def api_stream_task():
 
     # 建立任务
     task = tm.add_task(url=url, mode=mode, quality=quality, subtitles_only=subtitles_only,
-                       subtitles=subtitles.split(',') if subtitles else [])
+                       subtitles=subtitles.split(',') if subtitles else [],
+                       video_format=video_format, audio_format=audio_format,
+                       meta_mode=meta_mode)
 
     def event_stream():
         last_offset = 0
@@ -909,127 +967,114 @@ def api_info():
     is_twitter = 'twitter.com' in url.lower() or 'x.com' in url.lower()
     is_youtube = 'youtube.com' in url.lower() or 'youtu.be' in url.lower()
 
-    # 构建基础命令
-    cmd = [config.YTDLP_PATH, '--skip-download', '--dump-single-json', '--no-warnings', '--no-check-certificate']
-
-    # 根据网站类型调整参数
-    if is_adult_site:
-        # 成人网站特殊处理 - 增加反反爬虫参数
-        cmd.extend([
-            '--no-playlist',
-            '--socket-timeout', '30',
-            '--extractor-retries', '5',
-            '--http-chunk-size', '1M',
-            '--force-ipv4',
-            '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            '--sleep-interval', '2',
-            '--max-sleep-interval', '5',
-            '--referer', 'https://www.google.com/',
-            '--add-header', 'Accept-Language:en-US,en;q=0.9',
-            '--add-header', 'Sec-Fetch-Dest:document',
-            '--add-header', 'Sec-Fetch-Mode:navigate',
-            '--add-header', 'Sec-Fetch-Site:none',
-            '--add-header', 'Cache-Control:max-age=0'
-        ])
-        logger.info(f"[api_info] 检测到成人网站，使用反反爬虫参数")
-    elif is_twitter:
-        # Twitter特殊处理
-        cmd.extend([
-            '--no-playlist',
-            '--socket-timeout', '20',
-            '--extractor-retries', '3',
-            '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-        ])
-        logger.info(f"[api_info] 检测到Twitter，使用特殊参数")
-    elif is_youtube:
-        # YouTube: 不应使用 --no-playlist 以允许音视频合并
-        cmd.extend([
-            '--socket-timeout', '15',
-            '--extractor-retries', '3'
-        ])
-        logger.info(f"[api_info] 检测到YouTube，使用标准参数")
+    # ---------- 新增: 统一多阶段探测 + 缓存 ----------
+    cache_key = f"api_info::{url}"
+    cached = video_info_cache.get(cache_key)
+    if cached:
+        logger.info("[api_info] 命中缓存结果")
+        info = cached
     else:
-        # 其他普通网站
-        cmd.extend([
-            '--no-playlist',
-            '--socket-timeout', '15',
-            '--extractor-retries', '3'
-        ])
+        attempts: list[dict[str,Any]] = []
 
-    # 添加通用参数
-    if geo_bypass:
-        cmd.append('--geo-bypass')
+        def build_cmd(primary: bool, force_no_playlist: bool=False, hardened: bool=False):
+            base = [config.YTDLP_PATH, '--skip-download', '--dump-single-json', '--no-warnings', '--no-check-certificate']
+            # 通用/站点差异
+            if is_adult_site:
+                base += ['--no-playlist','--socket-timeout','30','--extractor-retries','5','--http-chunk-size','1M','--force-ipv4',
+                         '--user-agent','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                         '--sleep-interval','2','--max-sleep-interval','5','--referer','https://www.google.com/',
+                         '--add-header','Accept-Language:en-US,en;q=0.9']
+                if primary:
+                    logger.info('[api_info] 成人站初次命令构建')
+            elif is_twitter:
+                base += ['--no-playlist','--socket-timeout','20','--extractor-retries','3','--user-agent','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36']
+            elif is_youtube:
+                # 初次对 YouTube 单视频优先添加 --no-playlist (如 URL 带 list= 则后续 fallback 去掉)
+                if force_no_playlist or primary:
+                    base += ['--no-playlist']
+                base += ['--socket-timeout','15','--extractor-retries','3']
+            else:
+                base += ['--no-playlist','--socket-timeout','15','--extractor-retries','3']
+            if hardened:
+                base += ['--ignore-errors','--force-ipv4','--retry-sleep','2','--fragment-retries','10']
+            if geo_bypass:
+                base.append('--geo-bypass')
+            if os.path.exists(config.COOKIES_FILE):
+                base += ['--cookies', config.COOKIES_FILE]
+            base.append(url)
+            return base
 
-    cmd.append(url)
-
-    # 添加Cookies（如果存在）
-    if os.path.exists(config.COOKIES_FILE):
-        cmd += ['--cookies', config.COOKIES_FILE]
-        logger.info(f"[api_info] 使用cookies文件")
-    else:
-        logger.info(f"[api_info] 未找到cookies文件")
-
-    # 记录完整命令（用于调试）
-    logger.info(f"[api_info] 执行命令: {' '.join(cmd)}")
-
-    try:
-        # 增加超时时间到60秒
-        proc = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='ignore', timeout=60, creationflags=CREATE_NO_WINDOW)
-
-        logger.info(f"[api_info] yt-dlp返回码: {proc.returncode}")
-
-        if proc.returncode != 0:
-            stderr_msg = (proc.stderr or '').strip() or proc.stdout
-            logger.error(f"[api_info] yt-dlp失败，错误信息: {stderr_msg[:500]}")
-
-            # 尝试重试一次（仅对成人网站）
-            if is_adult_site and 'timeout' not in stderr_msg.lower():
-                logger.info(f"[api_info] 成人网站失败，尝试重试...")
-                time.sleep(2)
-                proc = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='ignore', timeout=60, creationflags=CREATE_NO_WINDOW)
-
+        def run_once(tag: str, cmd: list[str], timeout_s: int):
+            logger.info(f"[api_info] 运行阶段 {tag}: {' '.join(cmd)}")
+            start = time.time()
+            try:
+                proc = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='ignore', timeout=timeout_s, creationflags=CREATE_NO_WINDOW)
+                duration = round(time.time()-start,2)
+                attempt_rec = {'stage': tag, 'returncode': proc.returncode, 'time': duration}
                 if proc.returncode != 0:
-                    stderr_msg = (proc.stderr or '').strip() or proc.stdout
-                    logger.error(f"[api_info] 重试仍失败: {stderr_msg[:500]}")
+                    stderr_msg = (proc.stderr or '').strip() or proc.stdout[:400]
+                    attempt_rec['stderr_head'] = stderr_msg[:220]
+                else:
+                    attempt_rec['stdout_len'] = len(proc.stdout)
+                attempts.append(attempt_rec)
+                if proc.returncode == 0:
+                    try:
+                        data_obj = json.loads(proc.stdout)
+                        return data_obj
+                    except Exception as je:
+                        attempt_rec['parse_error'] = str(je)
+                        return None
+                return None
+            except subprocess.TimeoutExpired:
+                attempts.append({'stage': tag, 'timeout': True})
+                return None
+            except Exception as ex:
+                attempts.append({'stage': tag, 'exception': str(ex)})
+                return None
 
-            code, friendly = _classify_with_code(stderr_msg)
+        info = None
+        # Stage 1: Primary (YouTube 单视频优先 --no-playlist)
+        info = run_once('primary', build_cmd(primary=True, force_no_playlist=True if is_youtube else False), 50)
+        # Stage 2: 若失败且是 YouTube 且 URL 可能是 playlist / 或未知原因，去掉 --no-playlist 再试
+        if not info and is_youtube:
+            info = run_once('youtube_no_restrict', build_cmd(primary=False, force_no_playlist=False), 55)
+        # Stage 3: 加强参数 (ignore-errors / fragment retry)
+        if not info:
+            info = run_once('hardened', build_cmd(primary=False, force_no_playlist=True if is_youtube else False, hardened=True), 60)
+        # Stage 4: 退回旧逻辑 get_video_info (含缓存 + 重试)
+        if not info:
+            try:
+                info = get_video_info(url, is_playlist=False)
+                attempts.append({'stage':'legacy_helper','used':True})
+            except Exception as legacy_err:
+                attempts.append({'stage':'legacy_helper','error': str(legacy_err)[:220]})
+        if not info:
+            # 所有阶段都失败
+            # 解析出最有代表性的错误
+            err_snippet = ''
+            for a in attempts:
+                if a.get('stderr_head'):
+                    err_snippet = a['stderr_head']
+                    break
+            code, friendly = _classify_with_code(err_snippet or '获取信息失败')
+            site_type = 'adult' if is_adult_site else 'twitter' if is_twitter else ('youtube' if is_youtube else 'general')
             return jsonify({
                 'error': friendly,
                 'error_code': code or 'unknown',
-                'raw': stderr_msg[:800],
-                'site_type': 'adult' if is_adult_site else 'twitter' if is_twitter else 'general'
+                'attempts': attempts,
+                'site_type': site_type
             }), 502
-
-        logger.info(f"[api_info] yt-dlp成功，输出长度: {len(proc.stdout)}")
-        info = json.loads(proc.stdout)
-
-    except subprocess.TimeoutExpired:
-        logger.error(f"[api_info] 超时错误，URL: {url}")
-        return jsonify({
-            'error': '获取信息超时，请稍后重试',
-            'error_code': 'timeout',
-            'site_type': 'adult' if is_adult_site else 'twitter' if is_twitter else 'general'
-        }), 504
-    except json.JSONDecodeError as je:
-        logger.error(f"[api_info] JSON解析失败: {je}")
-        return jsonify({
-            'error': '信息解析失败',
-            'error_code': 'parse_error',
-            'raw': str(je),
-            'site_type': 'adult' if is_adult_site else 'twitter' if is_twitter else 'general'
-        }), 500
-    except Exception as e:
-        logger.error(f"[api_info] 未知异常: {e}")
-        code, friendly = _classify_with_code(str(e))
-        return jsonify({
-            'error': friendly,
-            'error_code': code or 'unknown',
-            'site_type': 'adult' if is_adult_site else 'twitter' if is_twitter else 'general'
-        }), 500
+        # 缓存成功结果
+        video_info_cache.set(cache_key, info)
+        if attempts:
+            logger.info(f"[api_info] 探测成功 (stages={len(attempts)}) 缓存写入")
 
     formats = info.get('formats') or []
     structured = []
     max_effective_height = None
+    # 预处理: 收集纯视频轨 & 纯音频轨, 便于后续 quality_pairs 计算
+    video_tracks: list[dict[str,Any]] = []
+    audio_tracks: list[dict[str,Any]] = []
     for f in formats:
         raw_height = f.get('height')
         note = f.get('format_note') or ''
@@ -1051,7 +1096,7 @@ def api_info():
         if effective_height:
             if not max_effective_height or effective_height > max_effective_height:
                 max_effective_height = effective_height
-        structured.append({
+        entry = {
             'format_id': f.get('format_id'),
             'ext': f.get('ext'),
             'vcodec': f.get('vcodec'),
@@ -1064,7 +1109,70 @@ def api_info():
             'quality': f.get('quality'),
             'format_note': note,
             'tbr': f.get('tbr'),
-        })
+        }
+        structured.append(entry)
+        vc = (f.get('vcodec') or '').lower()
+        ac = (f.get('acodec') or '').lower()
+        if vc and vc != 'none' and (not ac or ac == 'none') and effective_height:
+            video_tracks.append({**entry, 'effective_height': effective_height})
+        if ac and ac != 'none' and (not vc or vc == 'none'):
+            audio_tracks.append(entry)
+
+    # 生成 quality_pairs: {height: {video: format_id, audio: format_id}}
+    quality_pairs: dict[int, dict[str,str]] = {}
+    if video_tracks and audio_tracks:
+        # 音频优选规则: 先按 abr(或 tbr) 逆序; 再偏好 m4a/mp4 容器; 再偏好 aac/opus
+        def audio_rank(a: dict[str,Any]):
+            abr = a.get('abr') or a.get('tbr') or 0
+            ext = (a.get('ext') or '').lower()
+            acodec = (a.get('acodec') or '').lower()
+            # m4a/mp4 优先, 其次 webm/opus
+            ext_score = 2 if ext in ('m4a','mp4') else (1 if ext in ('webm','ogg') else 0)
+            codec_score = 2 if ('aac' in acodec or 'mp4a' in acodec) else (1 if ('opus' in acodec) else 0)
+            return (abr, ext_score, codec_score)
+        # 预先选出一个最佳音频供所有高度复用 (大多数情况)
+        best_audio = sorted(audio_tracks, key=audio_rank, reverse=True)[0]
+        # 视频优选规则: 每个高度选一个: 优先 avc(h264)/mp4 -> vp9/webm -> av01；若 fps 更高优先，其次码率(tbr)
+        def video_rank(v: dict[str,Any]):
+            vcodec = (v.get('vcodec') or '').lower()
+            ext = (v.get('ext') or '').lower()
+            tbr = v.get('tbr') or 0
+            fps = v.get('fps') or 0
+            # 编码打分: h264 > vp9 > av1 > 其他
+            if 'avc' in vcodec or 'h264' in vcodec:
+                codec_score = 3
+            elif 'vp9' in vcodec:
+                codec_score = 2
+            elif 'av01' in vcodec or 'av1' in vcodec:
+                codec_score = 1
+            else:
+                codec_score = 0
+            # 容器打分 mp4>webm>其他
+            if ext == 'mp4':
+                ext_score = 2
+            elif ext == 'webm':
+                ext_score = 1
+            else:
+                ext_score = 0
+            return (v.get('effective_height') or 0, codec_score, fps, tbr, ext_score)
+        # 按高度分组
+        by_height: dict[int, list[dict[str,Any]]] = {}
+        for vt in video_tracks:
+            h = vt.get('effective_height') or 0
+            if not h:
+                continue
+            by_height.setdefault(h, []).append(vt)
+        for h, items in by_height.items():
+            # 选最佳视频
+            best_video = sorted(items, key=video_rank, reverse=True)[0]
+            quality_pairs[h] = {
+                'video': str(best_video.get('format_id')),
+                'audio': str(best_audio.get('format_id'))
+            }
+        # 额外: default_best 标记最高高度的配对
+        if quality_pairs:
+            top_h = max(quality_pairs.keys())
+            quality_pairs['default_best'] = quality_pairs.get(top_h, {})  # type: ignore[index]
 
     # 能力标记
     has_8k = any((item.get('effective_height') or 0) >= 4320 for item in structured)
@@ -1097,8 +1205,17 @@ def api_info():
             'hdr': has_hdr,
             'av1': has_av1
         },
+        # 注意: quality_pairs 原始键包含 int (高度) 与 'default_best' 字符串混合，
+        # Flask JSONProvider 在 dumps 时默认 sort_keys=True 会触发 Python 对键排序，
+        # 造成 int 与 str 不可比较 -> TypeError: '<' not supported between instances of 'str' and 'int'
+        # 因此这里统一转换为字符串键。
+        'quality_pairs': {str(k): v for k, v in quality_pairs.items()} if quality_pairs else {},
         'geo_bypass': geo_bypass
     }
+    # 如果是缓存命中可附加标记
+    if cached:
+        payload['cached'] = True
+    return jsonify(payload)
     return jsonify(payload)
 
 # ---------------- 任务创建 & 查询 API (第一阶段最小版) ----------------
@@ -1233,6 +1350,65 @@ def api_tasks_cleanup():
     return jsonify({'removed': removed, 'removed_active': removed_active, 'max_keep': max_keep, 'remove_active': remove_active})
 
 
+# ---- 文件/目录辅助操作 API ----
+@app.route('/api/open_download_dir', methods=['POST'])
+def api_open_download_dir():
+    """在操作系统文件管理器中打开下载目录 (Windows: Explorer)。"""
+    try:
+        dl_dir = config.DOWNLOAD_DIR
+        if sys.platform.startswith('win'):
+            subprocess.Popen(['explorer', dl_dir])  # nosec - 本地受信环境
+        elif sys.platform.startswith('darwin'):
+            subprocess.Popen(['open', dl_dir])
+        else:
+            subprocess.Popen(['xdg-open', dl_dir])
+        return jsonify({'success': True, 'path': dl_dir})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/reveal_file', methods=['POST'])
+def api_reveal_file():
+    """在资源管理器中选中指定文件。传入 JSON: {"name":"文件名或相对路径"}
+    为安全起见仅允许位于 DOWNLOAD_DIR 内部。"""
+    data = request.get_json(silent=True) or {}
+    name = data.get('name')
+    if not name:
+        return jsonify({'error': '缺少 name'}), 400
+    dl_dir = os.path.abspath(config.DOWNLOAD_DIR)
+    target = os.path.abspath(os.path.join(dl_dir, name))
+    if not target.startswith(dl_dir):
+        return jsonify({'error': '非法路径'}), 400
+    if not os.path.exists(target):
+        return jsonify({'error': '文件不存在'}), 404
+    try:
+        if sys.platform.startswith('win'):
+            subprocess.Popen(['explorer', '/select,', target])  # 注意逗号后跟路径 (Windows Explorer 语法)
+        elif sys.platform.startswith('darwin'):
+            subprocess.Popen(['open', '-R', target])
+        else:
+            # Linux 下没有统一“选中文件”语义，退化为打开目录
+            subprocess.Popen(['xdg-open', os.path.dirname(target)])
+        return jsonify({'success': True, 'file': target})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/last_finished_file')
+def api_last_finished_file():
+    """返回最近一个完成状态任务的文件路径。"""
+    tm = _get_task_manager()
+    if not tm:
+        return jsonify({'error': '任务系统未初始化'}), 500
+    latest = None
+    with tm.tasks_lock:
+        for t in tm.tasks.values():
+            if t.status == 'finished' and t.file_path and os.path.exists(t.file_path):
+                if latest is None or t.updated_at > latest.updated_at:  # type: ignore[attr-defined]
+                    latest = t
+    if not latest:
+        return jsonify({'found': False})
+    return jsonify({'found': True, 'file': latest.file_path, 'task_id': latest.id, 'title': latest.title})
+
+
 
 def open_browser():
     webbrowser.open_new("http://127.0.0.1:5001")
@@ -1279,7 +1455,35 @@ if __name__ == '__main__':
                 logger.info(f"[ROUTE] {rule.methods} {rule}")
     except Exception as _e:
         logger.warning(f"无法列出路由: {_e}")
+
+    @app.route('/diag/task_manager')
+    def diag_task_manager():
+        tm = _get_task_manager()
+        if not tm:
+            return jsonify({'initialized': False, 'reason': 'task_manager is None'}), 200
+        try:
+            with tm.tasks_lock:
+                stats = {
+                    'initialized': True,
+                    'tasks_total': len(tm.tasks),
+                    'queued': len([t for t in tm.tasks.values() if t.status == 'queued']),
+                    'downloading': len([t for t in tm.tasks.values() if t.status == 'downloading']),
+                    'merging': len([t for t in tm.tasks.values() if t.status == 'merging']),
+                    'finished': len([t for t in tm.tasks.values() if t.status == 'finished']),
+                    'error': len([t for t in tm.tasks.values() if t.status == 'error']),
+                    'canceled': len([t for t in tm.tasks.values() if t.status == 'canceled']),
+                    'worker_threads': [th.name for th in getattr(tm, 'workers', []) if th.is_alive()],
+                    'aria2c_path': getattr(tm, 'aria2c_path', None),
+                }
+            return jsonify(stats), 200
+        except Exception as de:
+            return jsonify({'initialized': True, 'error': str(de)}), 200
     app.run(host='127.0.0.1', port=port, debug=False, use_reloader=False, threaded=True)
+
+    # 诊断：TaskManager 状态 (放在 run 之后不会被执行，需放在文件尾部之前；因此复制到 whoami 上方)
+
+    # NOTE: 上面的 app.run 会阻塞，因此 /diag/task_manager 路由应在其之前定义。如果打包运行通过其他入口 (如 flask run) 则也会生效。
+
 
 # 轻量级运行时自检（放在文件末尾添加，不影响流程）
 @app.route('/whoami')

@@ -4,6 +4,10 @@ import shutil
 import datetime
 import zipfile
 from pathlib import Path
+try:
+    from version import APP_VERSION
+except Exception:
+    APP_VERSION = "0.0.0"
 
 def zip_dir(dir_path, zip_path):
     """将文件夹压缩成 zip 文件"""
@@ -25,8 +29,9 @@ def main():
     source_dir = project_root / "dist" / "流光下载器"
     release_dir = project_root / "release"
     
-    version = datetime.datetime.now().strftime("%Y%m%d")
-    release_name = f"流光下载器_v{version}"
+    date_tag = datetime.datetime.now().strftime("%Y%m%d")
+    version = APP_VERSION
+    release_name = f"流光下载器_v{version}_{date_tag}"
     release_path = release_dir / release_name
     zip_name = f"{release_name}.zip"
     zip_path = release_dir / zip_name
@@ -38,7 +43,7 @@ def main():
         return
 
     print(f"源文件: {source_dir}")
-    print(f"目标版本: {version}")
+    print(f"目标版本: {version} (日期标签 {date_tag})")
 
     # --- 3. 清理并创建发布目录 ---
     if release_dir.exists():

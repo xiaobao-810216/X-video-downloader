@@ -1,13 +1,23 @@
-# 🎬 流光下载器 (X/Twitter Video Downloader)
+# 🎬 流光下载器 (X/Twitter Video Downloader) — v3.5.0
 
 [![下载最新版本](https://img.shields.io/github/v/release/xiaobao-810216/X-video-downloader?label=下载最新版本&color=blue)](https://github.com/xiaobao-810216/X-video-downloader/releases/latest)
 [![GitHub stars](https://img.shields.io/github/stars/xiaobao-810216/X-video-downloader)](https://github.com/xiaobao-810216/X-video-downloader/stargazers)
 [![License](https://img.shields.io/github/license/xiaobao-810216/X-video-downloader)](LICENSE)
 
-## � 2025-09 重大更新 (计划版本: v3.0)
+## 🚀 2025-09 稳定增强 (当前版本: v3.5.0)
 本次为向后不完全兼容升级，旧的 `/download` 流式端点已废弃 (410)。请所有脚本 / 前端插件 / 自动化集成尽快迁移。
 
-### 新特性汇总
+### v3.5.0 新增/改进
+> 在 v3.0 基础上提升合并稳定性与使用体验。
+
+- 🛡️ 合并失败自动回退：检测 ffmpeg “Invalid data”/“Error opening input files” 时自动切换 mp4 + m4a 保守组合再试。
+- 🎯 分辨率选择记忆：刷新格式后保留用户已选质量，不再强制回到“自动推荐”。
+- 🧠 统一版本号：新增 `version.py (APP_VERSION=3.5.0)`，构建与发布脚本统一引用。
+- 📦 发布包命名：`流光下载器_v3.5.0_YYYYMMDD.zip` 同时包含语义版本+日期。
+- 🧾 构建元数据：`build_meta.json` 增加 `version` 字段，方便溯源。
+- 🔁 仍完全兼容 v3.0 SSE/任务/诊断接口。
+
+### v3.0 基础重构回顾
 - 统一 SSE 接口：`/api/stream_task` 提供增量日志(`type=log`) + 状态快照(`type=status`)；支持取消、字幕-only、quality 动态映射。
 - 任务体系重构：标准字段 (status / stage / progress / file_path / codecs)，支持 `/api/tasks` 快照与 `/api/tasks/<id>/cancel`。
 - Cookies 策略革新：默认不再偷偷尝试浏览器；新增 `LUMINA_FORCE_BROWSER_COOKIES` / `LUMINA_DISABLE_BROWSER_COOKIES`；失败自动回退匿名，不再中止公共视频任务。
@@ -247,6 +257,7 @@ curl -N "http://127.0.0.1:5001/api/stream_task?url=...&mode=merged&quality=best"
 - **v1.0** - 初始发布，基础下载功能
 - **v2.0** - 新增字幕下载、播放列表支持、界面美化
 - **v3.0 (2025-09)** - 统一 `/api/stream_task` SSE、废弃 `/download`、新增任务/取消接口、可观测诊断端点、Cookies 策略重写、构建元数据与打包稳定性提升
+- **v3.5.0 (2025-09)** - 合并失败自动回退；分辨率选择记忆；集中版本号；发布包命名改进；`build_meta.json` 增加 version 字段
 
 ## ⚖️ 许可证
 MIT License

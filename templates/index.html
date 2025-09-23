@@ -3,8 +3,9 @@
 <head>
     <title>流光下载器</title>
     <meta charset="utf-8">
-    <link rel="icon" type="image/svg+xml" href="/static/video_downloader_logo.svg">
-    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <!-- Favicon 修复：项目中不存在 favicon.svg/favicon.ico，使用 icon.ico 与 SVG 主 Logo -->
+    <link rel="icon" type="image/x-icon" href="/static/icon.ico">
+    <link rel="alternate icon" type="image/svg+xml" href="/static/video_downloader_logo.svg">
     <style>
         body {
             margin: 0;
@@ -446,12 +447,8 @@
             line-height: 1.4;
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            justify-content: center;
-        }
+        .action-buttons { display:flex; gap:10px; margin-top:20px; justify-content:center; }
+        /* 移除底部 util-buttons，将操作按钮上移到日志标题行 */
 
         .clear-btn {
             background: #6b7280;
@@ -525,6 +522,14 @@
                 </div>
             </div>
 
+            <!-- 元数据开关：简单，不占主视图宽度 -->
+            <div style="margin: -10px 0 20px 0; font-size:13px; color:#374151; text-align:left;">
+                <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                    <input type="checkbox" id="metaToggle" checked style="transform:scale(1.1);" />
+                    <span>生成元数据 (meta.json)</span>
+                </label>
+            </div>
+
             <div class="options-row quality-section" id="qualitySection">
                 <div class="option-group">
                     <label for="quality">质量选择</label>
@@ -578,9 +583,11 @@
                 <div class="log-section">
                     <div class="log-header">
                         <h4 class="log-title">下载日志</h4>
-                        <div class="log-actions">
+                        <div class="log-actions" style="display:flex; gap:8px; flex-wrap:wrap;">
                             <button class="clear-btn" id="toggleLogBtn" onclick="toggleLogVisibility()">显示日志</button>
                             <button class="clear-btn" onclick="clearLogs()">🗑️ 清理日志</button>
+                            <button class="clear-btn" onclick="openDownloadDir()">📂 打开目录</button>
+                            <button class="clear-btn" id="revealLastBtn" onclick="revealLastFile()">🔍 最近文件</button>
                         </div>
                     </div>
                     <div id="logContainer" class="log-container" style="display: none;"></div>
@@ -665,7 +672,7 @@
                 displayVideoInfo(data);
 
                 // 更新质量选项
-                updateQualityOptions(data.formats || []);
+                updateQualityOptions(data.formats || [], data.quality_pairs || {});
 
                 // 更新字幕选项
                 updateSubtitleOptions(data.subtitles || [], data.auto_subtitles || []);
@@ -703,9 +710,12 @@
             return `${minutes}:${secs.toString().padStart(2, '0')}`;
         }
 
-        function updateQualityOptions(formats) {
+        function updateQualityOptions(formats, qualityPairs) {
             const qualityContainer = document.querySelector('#qualitySection .radio-group');
             const downloadMode = document.querySelector('input[name="downloadMode"]:checked').value;
+
+            // 记录之前的选择 (若尚未记录则读取当前已选或默认 best)
+            const prevSelection = window._lastQualitySelection || document.querySelector('#qualitySection input[name="quality"]:checked')?.value || 'best';
 
             // 清空现有选项
             qualityContainer.innerHTML = '';
@@ -719,8 +729,35 @@
             `;
             qualityContainer.appendChild(bestOption);
 
-            // 如果是音频模式，显示音频质量选项
-            if (downloadMode === 'audio') {
+            let usedPairs = false;
+            if (qualityPairs && Object.keys(qualityPairs).length > 0 && downloadMode !== 'audio') {
+                const heights = Object.keys(qualityPairs).filter(k => k !== 'default_best').map(h => parseInt(h)).filter(h => !isNaN(h));
+                if (heights.length > 0) {
+                    heights.sort((a,b)=>b-a);
+                    heights.forEach(h => {
+                        const pair = qualityPairs[h];
+                        if (!pair || !pair.video || !pair.audio) return;
+                        const option = document.createElement('div');
+                        option.className = 'radio-option';
+                        let labelTxt = `${h}p`;
+                        if (h >= 4320) labelTxt = '8K';
+                        else if (h >= 2160) labelTxt = '4K';
+                        else if (h >= 1080) labelTxt = '1080P';
+                        else if (h >= 720) labelTxt = '720P';
+                        else if (h >= 480) labelTxt = '480P';
+                        else if (h >= 360) labelTxt = '360P';
+                        else labelTxt = `${h}p (低清)`;
+                        option.innerHTML = `
+                            <input type="radio" id="q${h}" name="quality" value="${h}" data-vfmt="${pair.video}" data-afmt="${pair.audio}">
+                            <label for="q${h}">${labelTxt}</label>
+                        `;
+                        qualityContainer.appendChild(option);
+                    });
+                    usedPairs = true;
+                }
+            }
+
+            if (!usedPairs && downloadMode === 'audio') {
                 // 收集音频格式，使用Map来确保唯一性
                 const audioFormats = new Map();
                 formats.forEach(format => {
@@ -759,7 +796,7 @@
                         qualityContainer.appendChild(option);
                     });
                 }
-            } else {
+            } else if (!usedPairs && downloadMode !== 'audio') {
                 // 视频模式：收集所有可用的有效高度，使用Map确保唯一性
                 const heights = new Map();
                 formats.forEach(format => {
@@ -802,6 +839,32 @@
                     qualityContainer.appendChild(noQualityOption);
                 }
             }
+
+            // 恢复之前的选择
+            const radios = qualityContainer.querySelectorAll('input[name="quality"]');
+            let restored = false;
+            radios.forEach(r => {
+                if (r.value === prevSelection) {
+                    r.checked = true;
+                    restored = true;
+                }
+            });
+            if (!restored) {
+                // 如果之前的选项不存在，保留 best
+                const bestRadio = qualityContainer.querySelector('input[value="best"]');
+                if (bestRadio) bestRadio.checked = true;
+            }
+
+            // 添加监听保存新的选择
+            radios.forEach(r => {
+                r.addEventListener('change', () => {
+                    if (r.checked) {
+                        window._lastQualitySelection = r.value;
+                    }
+                });
+            });
+            // 初次生成立即保存当前有效选择
+            window._lastQualitySelection = qualityContainer.querySelector('input[name="quality"]:checked')?.value || 'best';
         }
 
         function addLog(message, type = 'info') {
@@ -1022,8 +1085,11 @@
             if (modeRaw === 'video') mode = 'video_only';
             else if (modeRaw === 'audio') mode = 'audio_only';
             else mode = 'merged';
-            const qualityRaw = document.querySelector('input[name="quality"]:checked').value;
+            const qualityEl = document.querySelector('input[name="quality"]:checked');
+            const qualityRaw = qualityEl.value;
             const quality = mapQualityForBackend(qualityRaw);
+            const vfmt = qualityEl.getAttribute('data-vfmt');
+            const afmt = qualityEl.getAttribute('data-afmt');
             const subtitles = document.getElementById('subtitles').value;
             const progressContainer = document.getElementById('progress');
             const progressBar = document.querySelector('.progress-fill');
@@ -1048,6 +1114,15 @@
             params.set('mode', mode);
             params.set('quality', quality);
             if (subtitles) params.set('subtitles', subtitles);
+            const metaToggle = document.getElementById('metaToggle');
+            if (metaToggle) {
+                params.set('meta', metaToggle.checked ? '1' : '0');
+            }
+            if (vfmt && afmt && qualityRaw !== 'best') {
+                params.set('video_format', vfmt);
+                params.set('audio_format', afmt);
+                addLog(`使用直选格式: v=${vfmt} a=${afmt}`);
+            }
             if (mode === 'audio_only' || mode === 'video_only') {
                 // no special flag
             }
@@ -1181,6 +1256,32 @@
         }
 
         // 移除 startDownload 旧实现（已废弃）
+
+        async function openDownloadDir(){
+            try {
+                const r = await fetch('/api/open_download_dir',{method:'POST'});
+                const d = await r.json();
+                if(!d.success){ addLog('打开目录失败: '+(d.error||'未知')); }
+                else { addLog('已请求打开目录: '+d.path); }
+            } catch(e){ addLog('打开目录异常: '+e,'error'); }
+        }
+
+        async function revealLastFile(){
+            const btn = document.getElementById('revealLastBtn');
+            btn.disabled = true;
+            try {
+                const r = await fetch('/api/last_finished_file');
+                const d = await r.json();
+                if(!d.found){ addLog('没有已完成的任务文件'); btn.disabled=false; return; }
+                const name = d.file.split(/[/\\]/).pop();
+                // 调用选中文件
+                const post = await fetch('/api/reveal_file',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name: name})});
+                const pr = await post.json();
+                if(!pr.success){ addLog('显示文件失败: '+(pr.error||'未知'),'error'); }
+                else { addLog('已请求在资源管理器中显示: '+ name); }
+            } catch(e){ addLog('显示最近文件异常: '+e,'error'); }
+            finally { btn.disabled=false; }
+        }
     </script>
 </body>
 </html>

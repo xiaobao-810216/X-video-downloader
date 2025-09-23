@@ -3,6 +3,36 @@ import sys
 import platform
 from pathlib import Path
 
+# ---------------- 版本与特性开关 ----------------
+# 统一版本号（打包、日志、诊断接口都可读取）
+APP_VERSION = "3.5.0"
+
+# 元数据写入默认模式：优先显式 META_MODE，其次旧布尔禁用；未设则 sidecar
+_env_meta_mode = (os.environ.get('META_MODE') or '').strip().lower()
+if not _env_meta_mode:
+    if os.environ.get('LUMINA_DISABLE_META','').lower() in ('1','true','yes'):
+        _env_meta_mode = 'off'
+    else:
+        _env_meta_mode = 'sidecar'
+if _env_meta_mode not in ('off','sidecar','folder'):
+    _env_meta_mode = 'sidecar'
+DEFAULT_META_MODE = _env_meta_mode  # 供后端诊断或未来接口返回
+
+# FAST_START 标志（供前端或诊断展示，不直接决定逻辑；核心逻辑仍在 tasks.py）
+FAST_START_ENABLED = os.environ.get('LUMINA_FAST_START','').lower() in ('1','true','yes')
+
+# 公开一个简洁汇总函数（可在 /diag 或交互式调试里使用）
+def runtime_summary() -> dict:
+    return {
+        "app_version": APP_VERSION,
+        "python": sys.version.split()[0],
+        "platform": platform.platform(),
+        "default_meta_mode": DEFAULT_META_MODE,
+        "fast_start": FAST_START_ENABLED,
+        "download_dir": DOWNLOAD_DIR if 'DOWNLOAD_DIR' in globals() else None,
+        "ffmpeg_bundled": FFMPEG_BUNDLED_PATH if 'FFMPEG_BUNDLED_PATH' in globals() else None,
+    }
+
 # -------------------------------------------------------------
 # 桌面/下载目录路径解析改进
 # 目标：避免出现两个“流光视频下载”目录（如 Desktop 与 本地化“桌面” 或 OneDrive 重定向并存）

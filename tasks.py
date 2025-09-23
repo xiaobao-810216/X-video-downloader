@@ -49,6 +49,8 @@ class Task:
     filesize: Optional[int] = None
     partial_success: bool = False
     warning_message: Optional[str] = None
+    # 新增：每任务元数据模式 (off|sidecar|folder|None)。None 表示使用全局环境策略。
+    meta_mode: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d = asdict(self)
@@ -278,68 +280,57 @@ class TaskManager:
         else:
             forced_container = None  # 让 yt-dlp 自选 (可能是 webm/mp4/mkv)
 
+        # 输出模板：最终我们会在完成后，根据实际探测到的 height/vcodec 等，重命名文件增加 _{height}p 后缀
         out_path_template = os.path.join(self.download_dir, f"{base_template}.%(ext)s")
         # 任务初始 file_path 先记录模板（完成后再由实际文件填充或由前端展示）
         task.file_path = out_path_template
 
-        # 格式选择器逻辑 (修复: 使用yt-dlp推荐的YouTube格式选择语法)
-        q = getattr(task, 'quality', 'best')
-        mode = getattr(task, 'mode', 'merged')
-        
-        logger.info(f"[FORMAT_SEL] 任务 {task.id} - Raw Quality: '{q}', Mode: {mode}")
-        
-        # 如果前端直接传入标准格式表达式（含 '[' 和 ']'）则尊重原始字符串
-        if isinstance(q, str) and '[' in q and ']' in q:
-            format_selector = q
-            logger.info(f"[FORMAT_SEL] 使用前端直接传递的选择器: '{format_selector}'")
-        else:
-            if mode == 'audio_only':
-                format_selector = 'bestaudio/best'
-                logger.info(f"[FORMAT_SEL] 音频模式，选择器: '{format_selector}'")
-            elif mode == 'video_only':
-                # 视频仅下载（不需要音频）
-                if q == 'best8k':
-                    format_selector = 'bestvideo[height<=?4320]/bestvideo'
-                elif q == 'best4k':
-                    format_selector = 'bestvideo[height<=?2160]/bestvideo'
-                elif q in ('best','auto'):
-                    format_selector = 'bestvideo[height<=?1080]/bestvideo'
-                elif q == '640p':
-                    format_selector = 'bestvideo[height<=?640]/bestvideo'
-                else:
-                    format_selector = 'bestvideo[height<=?720]/bestvideo'
-                logger.info(f"[FORMAT_SEL] 视频模式，选择器: '{format_selector}'")
-            else:
-                # merged 模式：组合优先，再回退单路 best。使用简洁别名 bv (bestvideo) / ba (bestaudio) / b (best)
-                # 使用 "<=?" 让 yt-dlp 自动在没有该高度时向下兼容，bv* 代表首选最佳视频轨（含所有编解码可能）
-                if q == 'best8k':
-                    format_selector = 'bv[height<=?4320]+ba/best[height<=?4320]/b'
-                elif q == 'best4k':
-                    format_selector = 'bv[height<=?2160]+ba/best[height<=?2160]/b'
-                elif q in ('best','auto'):
-                    format_selector = 'bv[height<=?1080]+ba/best[height<=?1080]/b'
-                elif q == 'fast':
-                    # fast: 限制到 720p 以内，优先较低码率（让 YouTube 返回的更小）
-                    format_selector = 'bv[height<=?720]+ba/best[height<=?720]/b'
-                elif q == '640p':
-                    format_selector = 'bv[height<=?640]+ba/best[height<=?640]/b'
-                else:
-                    # 尝试解析自定义 height<=X 的写法
-                    try:
-                        q_str = str(q)
-                        m = re.search(r"height<=(\d+)", q_str)
-                        if m:
-                            custom_h = int(m.group(1))
-                            # 自定义：使用 <=?custom_h 作为上限，向下兼容
-                            format_selector = f'bv[height<=?{custom_h}]+ba/best[height<=?{custom_h}]/b'
-                            logger.info(f"[FORMAT_SEL] 自定义高度上限 {custom_h}p 组合优先")
-                        else:
-                            format_selector = 'bv+ba/b'
-                            logger.info("[FORMAT_SEL] 未识别质量参数，使用通用 bv+ba/b")
-                    except Exception as e:
-                        format_selector = 'bv+ba/b'
-                        logger.warning(f"[FORMAT_SEL] 解析质量字符串失败: {e}，使用通用 bv+ba/b")
-                logger.info(f"[FORMAT_SEL] 合并模式最终选择器: '{format_selector}'")
+        # ---------- 直接格式 ID 覆盖 (来自前端 quality_pairs) ----------
+        direct_selector = None
+        if task.video_format and task.audio_format and mode == 'merged':
+            direct_selector = f"{task.video_format}+{task.audio_format}"
+            logger.info(f"[FORMAT_SEL] 使用直接格式配对: {direct_selector}")
+        elif task.video_format and mode == 'video_only':
+            direct_selector = task.video_format
+            logger.info(f"[FORMAT_SEL] 使用直接视频格式: {direct_selector}")
+        elif task.audio_format and mode == 'audio_only':
+            direct_selector = task.audio_format
+            logger.info(f"[FORMAT_SEL] 使用直接音频格式: {direct_selector}")
+
+        # 格式选择器逻辑 (回退路径) 仅当 direct_selector 不存在或失败时使用
+        def build_adaptive_selector() -> str:
+            q = getattr(task, 'quality', 'best')
+            mode_loc = getattr(task, 'mode', 'merged')
+            logger.info(f"[FORMAT_SEL] 任务 {task.id} - Raw Quality: '{q}', Mode: {mode_loc}")
+            if isinstance(q, str) and '[' in q and ']' in q:
+                logger.info(f"[FORMAT_SEL] 使用前端直接传递的选择器: '{q}'")
+                return q
+            if mode_loc == 'audio_only':
+                return 'bestaudio/best'
+            if mode_loc == 'video_only':
+                if q == 'best8k': return 'bestvideo[height<=?4320]/bestvideo'
+                if q == 'best4k': return 'bestvideo[height<=?2160]/bestvideo'
+                if q in ('best','auto'): return 'bestvideo[height<=?1080]/bestvideo'
+                if q == '640p': return 'bestvideo[height<=?640]/bestvideo'
+                return 'bestvideo[height<=?720]/bestvideo'
+            # merged
+            if q == 'best8k': return 'bv[height<=?4320]+ba/best[height<=?4320]/b'
+            if q == 'best4k': return 'bv[height<=?2160]+ba/best[height<=?2160]/b'
+            if q in ('best','auto'): return 'bv[height<=?1080]+ba/best[height<=?1080]/b'
+            if q == 'fast': return 'bv[height<=?720]+ba/best[height<=?720]/b'
+            if q == '640p': return 'bv[height<=?640]+ba/best[height<=?640]/b'
+            try:
+                q_str = str(q)
+                m = re.search(r"height<=(\d+)", q_str)
+                if m:
+                    custom_h = int(m.group(1))
+                    return f'bv[height<=?{custom_h}]+ba/best[height<=?{custom_h}]/b'
+            except Exception as e:
+                logger.warning(f"[FORMAT_SEL] 自定义高度解析失败: {e}")
+            return 'bv+ba/b'
+
+        format_selector = direct_selector or build_adaptive_selector()
+        adaptive_selector = None if direct_selector is None else build_adaptive_selector()
 
         # ---------- 构建与执行下载（更稳的默认 + 自动降级 + aria2c 兜底） ----------
         def build_args(conc: int, chunk: str, use_aria: bool=False) -> List[str]:
@@ -427,8 +418,80 @@ class TaskManager:
                 except Exception: pass
             return proc.returncode, recent
 
-        # 尝试 1：稳健默认（并发=4, 分块=4M, IPv4, 重试更高）
-        rc, recent = run_once(build_args(4, '4M', use_aria=False), '[speed] 使用内置下载器 (并发分片=4, 块=4M, IPv4)')
+        # FAST_START: 允许通过环境变量提升初始并发与块大小
+        fast_start = os.environ.get('LUMINA_FAST_START','').lower() in ('1','true','yes')
+        init_conc = 4
+        init_chunk = '4M'
+        if fast_start:
+            init_conc = 8
+            init_chunk = '8M'
+        rc, recent = run_once(build_args(init_conc, init_chunk, use_aria=False), f"[speed] 使用内置下载器 (并发={init_conc}, 块={init_chunk}, IPv4)")
+
+        # 如果直接格式选择失败，且我们使用了 direct_selector，则切换到自适应选择器重试一次
+        if rc != 0 and direct_selector is not None and adaptive_selector:
+            task.log.append('[fallback] 直接格式下载失败，回退到自适应选择器')
+            format_selector = adaptive_selector
+            rc, recent = run_once(build_args(init_conc, init_chunk, use_aria=False), '[fallback] 自适应格式首次尝试')
+
+        # 若 yt-dlp 因某个更高格式测试失败(退出码非0)但已经成功落地了一个合并文件，视作“部分成功”，避免无意义的再次整轮下载
+        if rc != 0:
+            try:
+                base_name_tmp = os.path.basename(base_template)
+                merged_exists = None
+                for fname in os.listdir(self.download_dir):
+                    if not fname.startswith(base_name_tmp + '.'):
+                        continue
+                    # 组件文件通常包含 .fXXX.，我们只要没有 .f 数字 . 的那个
+                    if re.search(r"\.f\d+\.", fname):
+                        continue
+                    # 排除模板占位
+                    if '%(ext)s' in fname:
+                        continue
+                    fullp = os.path.join(self.download_dir, fname)
+                    if os.path.isfile(fullp):
+                        # 简单大小判断 > 100KB 视为有效（避免极小损坏文件）
+                        try:
+                            if os.path.getsize(fullp) > 100 * 1024:
+                                merged_exists = fullp
+                                break
+                        except Exception:
+                            merged_exists = fullp
+                            break
+                if merged_exists:
+                    task.log.append('[partial-ok] 发现已生成合并文件且大小正常，忽略非零退出码，跳过后续重试')
+                    rc = 0
+                    task.file_path = merged_exists
+            except Exception as _pe:
+                task.log.append(f'[partial-ok] 检测部分成功时出错: {_pe}')
+
+        # 记录是否已尝试合并失败后的保守回退
+        fallback_merge_retry = False
+
+        def _is_merge_corruption(lines: list[str]) -> bool:
+            if not lines:
+                return False
+            txt = '\n'.join(lines[-60:]).lower()
+            # yt-dlp 在合并阶段的典型错误: "Error opening input files" / "Invalid data found when processing input"
+            return ('invalid data found when processing input' in txt) or ('error opening input files' in txt)
+
+        # 如果初次下载失败且疑似合并阶段文件损坏，尝试使用更保守的格式选择器进行一次快速回退
+        # 场景: 某些 YouTube HLS / AV1 小分辨率流出现极小/损坏文件导致 ffmpeg 合并失败
+        if rc != 0 and mode == 'merged' and _is_merge_corruption(recent):
+            try:
+                # 解析原始质量上限 (用于生成回退选择器)
+                height_cap_match = re.search(r"height<=\??(\d+)", str(format_selector))
+                cap = height_cap_match.group(1) if height_cap_match else None
+                if cap:
+                    fallback_selector = f"bv[ext=mp4][height<=?{cap}]+ba[ext=m4a]/best[height<=?{cap}]/b"
+                else:
+                    fallback_selector = "bv[ext=mp4]+ba[ext=m4a]/best/b"
+                task.log.append(f"[retry] 合并失败疑似损坏，使用保守格式回退: {fallback_selector}")
+                logger.warning(f"Task {task.id} 首次合并失败，回退格式选择器重试")
+                format_selector = fallback_selector  # 覆盖选择器
+                fallback_merge_retry = True
+                rc, recent = run_once(build_args(4, '4M', use_aria=False), '[retry] 回退格式重试 (mp4/m4a 优先)')
+            except Exception as _fb_e:
+                task.log.append(f"[retry] 回退格式构建异常: {_fb_e}")
 
         def has_ssl_eof(lines: list[str]) -> bool:
             text = '\n'.join(lines).lower()
@@ -444,6 +507,9 @@ class TaskManager:
                 rc, recent = run_once(build_args(2, '8M', use_aria=True), '[speed] 使用 aria2c 兜底 (-x16 -s16 -k1M)')
 
         if rc != 0:
+            # 如果已经进行过回退重试仍失败, 给出更明确提示
+            if fallback_merge_retry and _is_merge_corruption(recent):
+                task.log.append('[retry] 回退后仍发生合并/输入解析失败，建议降低质量或更新 yt-dlp')
             raise RuntimeError(f"媒体下载失败 (exit={rc})\n最后输出: {recent[-3:]} ")
 
         # 下载成功后：根据模板解析真实文件（优先选择已经合并的文件；若不存在则识别组件文件）
@@ -627,6 +693,87 @@ class TaskManager:
                                             pass
         except Exception as fallback_err:
             task.log.append(f'[audio-fallback] 处理异常: {fallback_err}')
+
+        # 统一在完成前再次填充元数据，确保 height/vcodec/acodec/size 最新
+        try:
+            self._fill_media_metadata(task)
+        except Exception:
+            pass
+
+        # --- 追加: 生成带高度后缀的新文件名 + (可选) sidecar meta.json ---
+        try:
+            if task.file_path and os.path.exists(task.file_path):
+                original_path = task.file_path
+                base_dir = os.path.dirname(original_path)
+                root_name, ext = os.path.splitext(os.path.basename(original_path))
+                # 若已经有 _XXXp 后缀则避免重复
+                height_val = task.height
+                suffix_applied = False
+                if height_val and isinstance(height_val, int):
+                    if not re.search(r"_(\d{3,4})p$", root_name):
+                        new_root = f"{root_name}_{height_val}p"
+                        new_name = new_root + ext
+                        new_path = os.path.join(base_dir, new_name)
+                        try:
+                            if not os.path.exists(new_path):
+                                os.rename(original_path, new_path)
+                                task.file_path = new_path
+                                task.log.append(f"[rename] 已添加分辨率后缀 -> {os.path.basename(new_path)}")
+                                suffix_applied = True
+                        except Exception as re_err:
+                            task.log.append(f"[rename] 添加高度后缀失败: {re_err}")
+                # 写 meta.json（使用最终路径）— 新模式：META_MODE=off/sidecar/folder
+                # 兼容旧开关：LUMINA_DISABLE_META=1 等同于 META_MODE=off
+                # 1) 每任务覆盖 > 2) 环境变量 > 3) 旧禁用布尔 > 默认 sidecar
+                raw_mode = (task.meta_mode or '').strip().lower() or os.environ.get('META_MODE') or ''
+                raw_mode = raw_mode.strip().lower()
+                if not raw_mode:  # 未指定模式
+                    # 如果未指定，若旧的禁用开关存在则 off，否则默认 sidecar
+                    if os.environ.get('LUMINA_DISABLE_META','').lower() in ('1','true','yes'):
+                        raw_mode = 'off'
+                    else:
+                        raw_mode = 'sidecar'
+                if raw_mode not in ('off','sidecar','folder'):
+                    raw_mode = 'sidecar'
+                if raw_mode == 'off':
+                    task.log.append('[meta] META_MODE=off，跳过元数据文件写入')
+                else:
+                    try:
+                        meta = {
+                            'task_id': task.id,
+                            'source_url': task.url,
+                            'title': task.title,
+                            'requested_quality': getattr(task, 'quality', None),
+                            'mode': getattr(task, 'mode', None),
+                            'height': task.height,
+                            'width': task.width,
+                            'vcodec': task.vcodec,
+                            'acodec': task.acodec,
+                            'filesize': task.filesize,
+                            'final_file': task.file_path,
+                            'renamed_with_height': suffix_applied,
+                            'created_at': task.created_at,
+                            'completed_at': time.time(),
+                            'meta_mode': raw_mode,
+                        }
+                        if raw_mode == 'sidecar':
+                            meta_path = (task.file_path or original_path) + '.meta.json'
+                        else:  # folder 模式
+                            base_meta_dir = os.environ.get('LUMINA_META_DIR') or os.path.join(base_dir, '_meta')
+                            try:
+                                os.makedirs(base_meta_dir, exist_ok=True)
+                            except Exception:
+                                pass
+                            # 使用与媒体文件同名（含后缀）+ .json，避免冲突
+                            media_base = os.path.basename(task.file_path or original_path)
+                            meta_path = os.path.join(base_meta_dir, media_base + '.json')
+                        with open(meta_path, 'w', encoding='utf-8') as mf:
+                            json.dump(meta, mf, ensure_ascii=False, indent=2)
+                        task.log.append(f"[meta] 写入元数据 ({raw_mode}) -> {os.path.basename(meta_path)}")
+                    except Exception as me:
+                        task.log.append(f"[meta] 元数据写入失败: {me}")
+        except Exception as final_block_err:
+            task.log.append(f"[finalize] 后缀/元数据步骤异常: {final_block_err}")
 
         # 最终标记完成
         self._update_task(task, status='finished', progress=100.0, stage=None)

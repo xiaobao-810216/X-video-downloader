@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- 背景圆形 -->
+  <circle cx="100" cy="100" r="95" fill="url(#bgGradient)" stroke="#2563eb" stroke-width="2"/>
+  
+  <!-- 渐变定义 -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="playGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e5e7eb;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 视频播放框 -->
+  <rect x="55" y="65" width="90" height="70" rx="8" fill="url(#playGradient)" stroke="#d1d5db" stroke-width="2"/>
+  
+  <!-- 播放按钮三角形 -->
+  <polygon points="80,85 80,115 105,100" fill="url(#bgGradient)"/>
+  
+  <!-- 下载箭头 -->
+  <g transform="translate(120, 95)">
+    <!-- 箭头杆 -->
+    <rect x="-3" y="-15" width="6" height="20" fill="url(#arrowGradient)" rx="3"/>
+    <!-- 箭头头部 -->
+    <polygon points="-8,5 0,15 8,5" fill="url(#arrowGradient)"/>
+  </g>
+  
+  <!-- 视频图标装饰 -->
+  <g transform="translate(100, 45)">
+    <!-- 小视频胶片效果 -->
+    <rect x="-12" y="-6" width="24" height="12" rx="2" fill="#ffffff" opacity="0.9"/>
+    <rect x="-10" y="-4" width="4" height="8" fill="#3b82f6"/>
+    <rect x="-2" y="-4" width="4" height="8" fill="#3b82f6"/>
+    <rect x="6" y="-4" width="4" height="8" fill="#3b82f6"/>
+  </g>
+  
+  <!-- 多平台装饰元素 - 代表不同视频源 -->
+  <circle cx="50" cy="155" r="8" fill="#ff0000" opacity="0.8"/>  <!-- YouTube 红色 -->
+  <circle cx="75" cy="160" r="6" fill="#1da1f2" opacity="0.8"/>  <!-- Twitter 蓝色 -->
+  <circle cx="125" cy="160" r="6" fill="#833ab4" opacity="0.8"/> <!-- Instagram 紫色 -->
+  <circle cx="150" cy="155" r="8" fill="#25d366" opacity="0.8"/> <!-- TikTok 绿色 -->
+  <circle cx="135" cy="75" r="2" fill="#10b981" opacity="0.8">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="140" cy="85" r="1.5" fill="#10b981" opacity="0.6">
+    <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="145" cy="95" r="1" fill="#10b981" opacity="0.4">
+    <animate attributeName="opacity" values="0.1;0.6;0.1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+</svg>
