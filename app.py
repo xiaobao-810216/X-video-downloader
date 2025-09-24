@@ -144,26 +144,56 @@ def retry_on_failure(max_retries: int = 3, backoff_factor: float = 2.0, exceptio
                         time.sleep(wait_time)
                     else:
                         logger.error(f"{func.__name__} 最终失败 (尝试 {max_retries + 1} 次): {e}")
-            raise last_exception
+            # 避免 raise None 触发类型检查错误
+            if last_exception is not None:
+                raise last_exception
+            raise RuntimeError(f"{func.__name__} 执行失败且未捕获具体异常")
         return wrapper
     return decorator
 
 def get_ffmpeg_path():
+    """返回 ffmpeg 可执行文件路径。
+
+    改进: 在打包后可能由于工作目录变化导致原先的 resource_path 解析失败/或用户把 ffmpeg 目录移动。
+    这里增加多路径穷举 + 详细日志，便于诊断 '找不到 ffmpeg' 问题。
+    """
     global _ffmpeg_path_cache
-    if _ffmpeg_path_cache is not None: return _ffmpeg_path_cache
-    if os.path.exists(config.FFMPEG_BUNDLED_PATH):
-        try:
-            subprocess.run([config.FFMPEG_BUNDLED_PATH, '-version'], capture_output=True, check=True, creationflags=CREATE_NO_WINDOW, timeout=5)
-            logger.info("使用打包的 FFmpeg")
-            _ffmpeg_path_cache = config.FFMPEG_BUNDLED_PATH
-            return _ffmpeg_path_cache
-        except: logger.warning("打包的 FFmpeg 不可用")
-    try:
-        subprocess.run([config.FFMPEG_SYSTEM_PATH, '-version'], capture_output=True, check=True, creationflags=CREATE_NO_WINDOW, timeout=5)
-        logger.info("使用系统 FFmpeg")
-        _ffmpeg_path_cache = config.FFMPEG_SYSTEM_PATH
+    if _ffmpeg_path_cache not in (None, False):
         return _ffmpeg_path_cache
-    except: logger.warning("系统 FFmpeg 不可用")
+
+    candidates = []
+    # 1) 配置中解析的打包路径
+    candidates.append(config.FFMPEG_BUNDLED_PATH)
+    # 2) 与可执行文件同级目录下的 ffmpeg/bin/ffmpeg.exe (处理 resource_path 失效或目录被复制走的情况)
+    try:
+        exe_dir = os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else os.path.abspath(__file__))
+        candidates.append(os.path.join(exe_dir, 'ffmpeg', 'bin', 'ffmpeg.exe'))
+        candidates.append(os.path.join(exe_dir, 'ffmpeg', 'ffmpeg.exe'))
+    except Exception:
+        pass
+    # 3) 尝试 _MEIPASS 路径 (one-file 解包)
+    if hasattr(sys, '_MEIPASS'):
+        mp = getattr(sys, '_MEIPASS')  # type: ignore[attr-defined]
+        candidates.append(os.path.join(mp, 'ffmpeg', 'bin', 'ffmpeg.exe'))
+    # 4) PATH 中的 ffmpeg
+    candidates.append(config.FFMPEG_SYSTEM_PATH)
+
+    checked = []
+    for cand in candidates:
+        if not cand or cand in checked:
+            continue
+        checked.append(cand)
+        if not os.path.exists(cand):
+            continue
+        try:
+            r = subprocess.run([cand, '-version'], capture_output=True, creationflags=CREATE_NO_WINDOW, timeout=4)
+            if r.returncode == 0:
+                _ffmpeg_path_cache = cand
+                logger.info(f"[FFMPEG] 选用: {cand}")
+                return cand
+        except Exception:
+            continue
+    logger.warning(f"[FFMPEG] 未找到可用 ffmpeg (已检查 {len(candidates)} 个候选)")
     _ffmpeg_path_cache = False
     return None
 
@@ -254,6 +284,31 @@ logger = setup_logging()
 app = Flask(__name__, template_folder=config.resource_path('templates'), static_folder=config.resource_path('static'))
 if CORS: CORS(app)
 
+# 预热线程：减少首个任务冷启动开销
+def _background_prewarm():
+    try:
+        logger.info('[PREWARM] 启动预热线程')
+        # 预热 yt-dlp
+        try:
+            subprocess.run([config.YTDLP_PATH, '--version'], capture_output=True, timeout=10, creationflags=CREATE_NO_WINDOW)
+        except Exception as e:
+            logger.debug(f'[PREWARM] yt-dlp 预热忽略: {e}')
+        # 预热 ffmpeg
+        ff = get_ffmpeg_path()
+        if ff:
+            try:
+                subprocess.run([ff, '-version'], capture_output=True, timeout=6, creationflags=CREATE_NO_WINDOW)
+            except Exception:
+                pass
+        logger.info('[PREWARM] 完成')
+    except Exception as e:
+        logger.debug(f'[PREWARM] 异常: {e}')
+
+try:
+    threading.Thread(target=_background_prewarm, daemon=True).start()
+except Exception:
+    pass
+
 # UI 版本标记（帮助确认前端是否加载到最新模板）
 UI_VERSION = "3.0.0"  # 2025-09 重大重构版本
 _BUILD_META = {}
@@ -267,7 +322,15 @@ try:
         logger.info("[INIT] 未找到 build_meta.json (源码运行或未嵌入版本信息)")
 except Exception as _be:
     logger.warning(f"[INIT] 读取 build_meta.json 失败: {_be}")
-logger.info(f"[INIT] Template search path: {app.jinja_loader.searchpath if hasattr(app,'jinja_loader') else 'N/A'} UI_VERSION={UI_VERSION}")
+try:
+    _tpl_search = None
+    jl = getattr(app, 'jinja_loader', None)
+    # some loaders expose 'searchpath', some 'search_path', some neither
+    if jl is not None:
+        _tpl_search = getattr(jl, 'searchpath', None) or getattr(jl, 'search_path', None)
+    logger.info(f"[INIT] Template search path: {_tpl_search if _tpl_search else 'N/A'} UI_VERSION={UI_VERSION}")
+except Exception:
+    logger.info(f"[INIT] Template search path: <unavailable> UI_VERSION={UI_VERSION}")
 
 # 抑制大量 /queue_status 访问日志噪音
 class _SuppressQueueStatusFilter(logging.Filter):
@@ -530,9 +593,14 @@ def video_info_route():
         if isinstance(info, list) and info:
             info = info[0]
 
-        title = info.get('title', '未知标题')
-        manual_subs = info.get('subtitles', {}) or {}
-        auto_captions = info.get('automatic_captions', {}) or {}
+        # 类型防御：yt-dlp 可能返回 dict / list (播放列表)；这里只需要主视频字典
+        if not isinstance(info, dict) and isinstance(info, list) and info:
+            info = info[0]
+        if not isinstance(info, dict):
+            info = {}
+        title = info.get('title', '未知标题')  # type: ignore[assignment]
+        manual_subs = info.get('subtitles', {}) or {}  # type: ignore[assignment]
+        auto_captions = info.get('automatic_captions', {}) or {}  # type: ignore[assignment]
         sub_options = []
         found_langs = set()
 
@@ -557,8 +625,8 @@ def video_info_route():
         return jsonify({
             'type': 'video',
             'title': title,
-            'id': info.get('id'),
-            'url': info.get('webpage_url', url),
+            'id': info.get('id'),  # type: ignore[call-arg]
+            'url': info.get('webpage_url', url),  # type: ignore[call-arg]
             'sub_options': sub_options
         })
     except Exception as e:
@@ -572,13 +640,15 @@ def add_to_queue():
         return jsonify({'error': '任务系统未初始化'}), 500
 
     data = request.json
-    videos = data.get('videos', [])
-    quality = data.get('quality', 'best')
-    req_vfmt = data.get('video_format')
-    req_afmt = data.get('audio_format')
-    task_type = data.get('task_type', 'video')
-    sub_lang = data.get('sub_lang')
-    download_mode = data.get('download_mode', 'merged')
+    if not isinstance(data, dict):
+        data = {}
+    videos = data.get('videos', [])  # type: ignore[assignment]
+    quality = data.get('quality', 'best')  # type: ignore[assignment]
+    req_vfmt = data.get('video_format')  # type: ignore[assignment]
+    req_afmt = data.get('audio_format')  # type: ignore[assignment]
+    task_type = data.get('task_type', 'video')  # type: ignore[assignment]
+    sub_lang = data.get('sub_lang')  # type: ignore[assignment]
+    download_mode = data.get('download_mode', 'merged')  # type: ignore[assignment]
 
     if not videos:
         return jsonify({'error': '没有要添加的项目'}), 400
@@ -711,7 +781,18 @@ def list_routes():
     output = []
     for rule in app.url_map.iter_rules():
         if rule.endpoint != 'static':
-            output.append({'rule': str(rule), 'methods': sorted(list(rule.methods - {'HEAD', 'OPTIONS'})), 'endpoint': rule.endpoint})
+            try:
+                mset = getattr(rule, 'methods', None)
+                if mset is None:
+                    methods_list = []
+                else:
+                    try:
+                        methods_list = sorted([m for m in mset if m not in {'HEAD','OPTIONS'}])  # type: ignore[iterable]
+                    except Exception:
+                        methods_list = []
+                output.append({'rule': str(rule), 'methods': methods_list, 'endpoint': rule.endpoint})
+            except Exception:
+                output.append({'rule': str(rule), 'methods': [], 'endpoint': getattr(rule,'endpoint', '?')})
     return jsonify({'count': len(output), 'routes': output})
 
 @app.route('/diag/raw_formats')
@@ -892,10 +973,42 @@ def api_stream_task():
         return Response('data: {"error":"任务系统未初始化"}\n\n', mimetype='text/event-stream')
 
     # 建立任务
+    # 新增：跳过 probe 支持 (前端把 /api/info 的缓存核心字段发送过来)
+    skip_probe = request.args.get('skip_probe','0').lower() in ('1','true','yes')
+    info_cache_raw = request.args.get('info_cache')
+    info_cache = None
+    if info_cache_raw:
+        # 两阶段解析：直接解析 -> URL 解码再解析
+        raw_first = info_cache_raw
+        parse_err = None
+        for attempt in (0,1):
+            trial = raw_first if attempt == 0 else None
+            if attempt == 1:
+                try:
+                    from urllib.parse import unquote
+                    trial = unquote(raw_first)
+                except Exception as _uqe:
+                    parse_err = _uqe
+                    trial = None
+            if not trial:
+                continue
+            try:
+                info_cache = json.loads(trial)
+                if attempt == 1:
+                    logger.info('[API_STREAM_TASK] info_cache 经过 URL 解码后解析成功')
+                break
+            except Exception as e:
+                parse_err = e
+                info_cache = None
+        if info_cache is None and parse_err:
+            logger.warning(f'[API_STREAM_TASK] info_cache 解析失败: {parse_err}')
+    if skip_probe and not isinstance(info_cache, dict):
+        logger.info('[API_STREAM_TASK] skip_probe=1 但 info_cache 无效，回退至正常探测路径')
+    logger.info(f"[API_STREAM_TASK] skip_probe={skip_probe} info_cache_keys={list(info_cache.keys()) if isinstance(info_cache, dict) else None}")
     task = tm.add_task(url=url, mode=mode, quality=quality, subtitles_only=subtitles_only,
                        subtitles=subtitles.split(',') if subtitles else [],
                        video_format=video_format, audio_format=audio_format,
-                       meta_mode=meta_mode)
+                       meta_mode=meta_mode, skip_probe=skip_probe, info_cache=info_cache)
 
     def event_stream():
         last_offset = 0
@@ -1244,11 +1357,14 @@ def api_create_task():
     # DEBUG: 记录接收到的参数
     logger.info(f"[API_TASK] 创建任务 - URL: {url[:100]}..., Mode: {mode}, Quality: '{quality}', Subtitles_only: {subtitles_only}, Data keys: {list(data.keys())}")
     
+    skip_probe = bool(data.get('skip_probe'))
+    info_cache = data.get('info_cache') if isinstance(data.get('info_cache'), dict) else None
     task = tm.add_task(url=url, video_format=video_format, audio_format=audio_format,
                        subtitles=subtitles, auto_subtitles=auto_subtitles,
                        prefer_container=prefer_container, filename_template=filename_template,
                        retry=retry, geo_bypass=geo_bypass,
-                       mode=mode, quality=quality, subtitles_only=subtitles_only)
+                       mode=mode, quality=quality, subtitles_only=subtitles_only,
+                       skip_probe=skip_probe, info_cache=info_cache)
     return jsonify({'task_id': task.id, 'status': task.status})
 
 @app.route('/api/tasks/<task_id>', methods=['GET'])

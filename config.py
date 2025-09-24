@@ -4,8 +4,11 @@ import platform
 from pathlib import Path
 
 # ---------------- 版本与特性开关 ----------------
-# 统一版本号（打包、日志、诊断接口都可读取）
-APP_VERSION = "3.5.0"
+# 统一版本号（打包、日志、诊断接口都可读取）通过 version.py 单一来源
+try:
+    from version import APP_VERSION  # type: ignore
+except Exception:
+    APP_VERSION = "0.0.0"  # 回退占位，极端情形下仍可运行
 
 # 元数据写入默认模式：优先显式 META_MODE，其次旧布尔禁用；未设则 sidecar
 _env_meta_mode = (os.environ.get('META_MODE') or '').strip().lower()
@@ -58,7 +61,14 @@ def _win_known_folder_desktop() -> Path | None:
         res = SHGetKnownFolderPath(ctypes.byref(CLSID_Desktop), 0, None, ctypes.byref(path_ptr))
         if res != 0:
             return None
-        return Path(path_ptr.value)
+        # path_ptr.value 可能为 None（极端情况下 API 未写入），需要防御以避免类型错误
+        raw = path_ptr.value
+        if not raw:
+            return None
+        try:
+            return Path(raw)
+        except Exception:
+            return None
     except Exception:
         return None
 
@@ -122,14 +132,30 @@ def detect_legacy_duplicates(chosen: Path, folder_name: str = '流光视频下�
             continue
     return legacy
 
-def resource_path(relative_path):
-    """获取资源的绝对路径，无论是从源代码运行还是从打包后的可执行文件运行。"""
-    try:
-        # PyInstaller 创建一个临时文件夹，并将路径存储在 _MEIPASS 中
-        base_path = sys._MEIPASS
-    except Exception:
-        # 不在 PyInstaller 打包环境中，使用常规路径
-        base_path = os.path.abspath(".")
+def resource_path(relative_path: str) -> str:
+    """解析资源文件的绝对路径。
+
+    修复: 之前使用 os.path.abspath('.') 作为基准，当用户通过快捷方式或在其它工作目录启动
+    已打包的一键目录 (one-folder) 应用时，当前工作目录可能不是 exe 所在目录，导致找不到 ffmpeg/yt-dlp 等资源。
+
+    优先顺序:
+      1. PyInstaller one-file 解包目录 (sys._MEIPASS)
+      2. 冻结应用 (sys.frozen) 下的可执行文件所在目录 (sys.executable)
+      3. 源码运行: 本文件所在目录 (__file__)
+    """
+    # 1) PyInstaller one-file 临时目录
+    if hasattr(sys, '_MEIPASS'):
+        base_path = getattr(sys, '_MEIPASS')  # type: ignore[attr-defined]
+    # 2) PyInstaller one-folder / 冻结应用
+    elif getattr(sys, 'frozen', False):  # type: ignore[attr-defined]
+        base_path = os.path.dirname(sys.executable)
+    else:
+        # 3) 源码模式：以当前文件所在目录为基准 (避免依赖启动时 CWD)
+        try:
+            base_path = os.path.dirname(os.path.abspath(__file__))
+        except Exception:
+            # 兜底: 仍退回当前工作目录
+            base_path = os.path.abspath('.')
     return os.path.join(base_path, relative_path)
 
 # --- 核心依赖路径 ---

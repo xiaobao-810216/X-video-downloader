@@ -525,9 +525,14 @@
             <!-- 元数据开关：简单，不占主视图宽度 -->
             <div style="margin: -10px 0 20px 0; font-size:13px; color:#374151; text-align:left;">
                 <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
-                    <input type="checkbox" id="metaToggle" checked style="transform:scale(1.1);" />
+                    <input type="checkbox" id="metaToggle" style="transform:scale(1.1);" />
                     <span>生成元数据 (meta.json)</span>
                 </label>
+                <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; margin-left:18px;">
+                    <input type="checkbox" id="fastStartToggle" checked style="transform:scale(1.1);" />
+                    <span>⚡ 快速启动(跳过初始探测)</span>
+                </label>
+                <span id="fastStartHint" style="margin-left:10px; color:#9ca3af;">(需先获取一次视频信息)</span>
             </div>
 
             <div class="options-row quality-section" id="qualitySection">
@@ -1117,6 +1122,29 @@
             const metaToggle = document.getElementById('metaToggle');
             if (metaToggle) {
                 params.set('meta', metaToggle.checked ? '1' : '0');
+            }
+            const fastStart = document.getElementById('fastStartToggle');
+            // 条件：勾选快速启动 + 已经有 currentVideoInfo（即前面获取过 /api/info）
+            if (fastStart && fastStart.checked) {
+                if (currentVideoInfo && currentVideoInfo.title) {
+                    try {
+                        const minimalInfo = {
+                            title: currentVideoInfo.title,
+                            id: currentVideoInfo.id || currentVideoInfo.video_id || undefined,
+                            duration: currentVideoInfo.duration || undefined,
+                            max_height: currentVideoInfo.max_height || undefined
+                        };
+                        // 清理 undefined 字段
+                        Object.keys(minimalInfo).forEach(k=> minimalInfo[k] === undefined && delete minimalInfo[k]);
+                        params.set('skip_probe', '1');
+                        params.set('info_cache', encodeURIComponent(JSON.stringify(minimalInfo)));
+                        addLog('启用快速启动 fast-path: ' + JSON.stringify(minimalInfo));
+                    } catch(e) {
+                        addLog('快速启动 JSON 序列化失败: ' + e, 'error');
+                    }
+                } else {
+                    addLog('未获取视频信息，无法启用快速启动（将执行正常探测）', 'warning');
+                }
             }
             if (vfmt && afmt && qualityRaw !== 'best') {
                 params.set('video_format', vfmt);

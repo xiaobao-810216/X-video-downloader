@@ -1,4 +1,4 @@
-import threading, queue, time, uuid, os, re, subprocess, json, logging, traceback, shutil
+import threading, queue, time, uuid, os, re, subprocess, json, logging, traceback, shutil, sys
 from urllib.parse import urlparse
 from dataclasses import dataclass, field, asdict
 from typing import Optional, Dict, Any, List
@@ -51,6 +51,14 @@ class Task:
     warning_message: Optional[str] = None
     # 新增：每任务元数据模式 (off|sidecar|folder|None)。None 表示使用全局环境策略。
     meta_mode: Optional[str] = None
+    # 新增：跳过二次 probe（依赖前端传来的 info_cache）
+    skip_probe: bool = False
+    info_cache: Optional[dict] = None
+    # 内部：虚拟进度标记
+    _synthetic_phase: Optional[str] = None
+    # 计时: 任务创建 & 首次出现真正下载进度的时间戳
+    start_ts: float = field(default_factory=time.time)
+    first_progress_ts: Optional[float] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d = asdict(self)
@@ -186,10 +194,19 @@ class TaskManager:
     # --------------- Core Download ---------------
     def _execute_download(self, task: Task):
         task.attempts += 1
-        self._update_task(task, status='downloading', stage='fetch_info')
-
-        info = self._probe_info(task)
-        title = info.get('title') or 'video'
+        info = None
+        probe_used = False
+        # 决策：是否跳过 probe
+        if task.skip_probe and task.info_cache and isinstance(task.info_cache, dict):
+            title = task.info_cache.get('title') or 'video'
+            self._update_task(task, status='downloading', stage='fast_start', title=title)
+            task.log.append('[fast-path] skip_probe=1，使用前端缓存信息')
+            info = {'title': title}
+        else:
+            probe_used = True
+            self._update_task(task, status='downloading', stage='fetch_info')
+            info = self._probe_info(task)
+        title = (info.get('title') if isinstance(info, dict) else None) or 'video'
         safe_title = self._safe_filename(title)
         base_template = task.filename_template.replace('%(title)s', safe_title)
         self._update_task(task, title=title)
@@ -224,14 +241,21 @@ class TaskManager:
             logger.info(f"Task {task.id} 字幕下载: {' '.join(args)}")
             proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding='utf-8', errors='ignore', creationflags=CREATE_NO_WINDOW)
             self.procs[task.id] = proc
-            for line in iter(proc.stdout.readline, ''):
-                if task.canceled:
-                    try: proc.kill()
-                    except Exception: pass
-                    self._update_task(task, status='canceled', stage=None); task.log.append('[canceled] 用户已取消任务');
-                    break
-                line = line.rstrip('\n');
-                if line: task.log.append(line)
+            if proc.stdout is None:  # pragma: no cover (safety guard for type checker)
+                task.log.append('[warn] 子进程未提供 stdout')
+            else:
+                for line in iter(proc.stdout.readline, ''):
+                    if task.canceled:
+                        try:
+                            proc.kill()
+                        except Exception:
+                            pass
+                        self._update_task(task, status='canceled', stage=None)
+                        task.log.append('[canceled] 用户已取消任务')
+                        break
+                    line = line.rstrip('\n')
+                    if line:
+                        task.log.append(line)
             proc.wait()
             try:
                 self.procs.pop(task.id, None)
@@ -387,31 +411,44 @@ class TaskManager:
             task.log.append(label)
             recent: list[str] = []
             try:
-                for raw in iter(proc.stdout.readline, ''):
-                    if task.canceled:
-                        try: proc.kill()
-                        except Exception: pass
-                        self._update_task(task, status='canceled', stage=None)
-                        task.log.append('[canceled] 用户已取消任务')
-                        return 130, recent
-                    line = (raw or '').rstrip('\n')
-                    if not line:
-                        continue
-                    task.log.append(line)
-                    recent.append(line)
-                    if len(recent) > 400:
-                        recent = recent[-400:]
-                    try:
-                        # 确保line是字符串类型
-                        line_str = str(line) if line is not None else ''
-                        m = re.search(r"\[download\]\s+(\d+(?:\.\d+)?)%", line_str) or re.search(r"\((\d{1,3})%\)", line_str)
-                        if m:
-                            pct = float(m.group(1))
-                            self._update_task(task, progress=pct, stage='downloading')
-                        elif 'Merging formats' in line_str or 'Merger' in line_str:
-                            self._update_task(task, stage='merging')
-                    except Exception:
-                        pass
+                if proc.stdout is None:
+                    task.log.append('[warn] 子进程未提供 stdout (download)')
+                else:
+                    for raw in iter(proc.stdout.readline, ''):
+                        if task.canceled:
+                            try:
+                                proc.kill()
+                            except Exception:
+                                pass
+                            self._update_task(task, status='canceled', stage=None)
+                            task.log.append('[canceled] 用户已取消任务')
+                            return 130, recent
+                        line = (raw or '').rstrip('\n')
+                        if not line:
+                            continue
+                        task.log.append(line)
+                        recent.append(line)
+                        if len(recent) > 400:
+                            recent = recent[-400:]
+                        try:
+                            # 确保line是字符串类型
+                            line_str = str(line) if line is not None else ''
+                            m = re.search(r"\[download\]\s+(\d+(?:\.\d+)?)%", line_str) or re.search(r"\((\d{1,3})%\)", line_str)
+                            if m:
+                                pct = float(m.group(1))
+                                # 记录首次真正下载进度
+                                if task.first_progress_ts is None:
+                                    task.first_progress_ts = time.time()
+                                    try:
+                                        delta = int((task.first_progress_ts - task.start_ts)*1000)
+                                        task.log.append(f"[timing] time_to_first_progress={delta}ms")
+                                    except Exception:
+                                        pass
+                                self._update_task(task, progress=pct, stage='downloading')
+                            elif 'Merging formats' in line_str or 'Merger' in line_str:
+                                self._update_task(task, stage='merging')
+                        except Exception:
+                            pass
             finally:
                 proc.wait()
                 try: self.procs.pop(task.id, None)
@@ -426,6 +463,29 @@ class TaskManager:
             init_conc = 8
             init_chunk = '8M'
         rc, recent = run_once(build_args(init_conc, init_chunk, use_aria=False), f"[speed] 使用内置下载器 (并发={init_conc}, 块={init_chunk}, IPv4)")
+
+        # 如果跳过 probe 且第一次失败，并且日志包含 format 不可用的典型关键词，触发一次补 probe + 重新选择
+        if rc != 0 and task.skip_probe:
+            joined_tail = '\n'.join(recent[-40:]).lower()
+            if any(k in joined_tail for k in ['requested format not available','no such format','unable to download video data','404']):
+                task.log.append('[fast-path] 首次直连失败，执行补 probe 回退')
+                try:
+                    info = self._probe_info(task)
+                    probe_used = True
+                    # 重新构建选择器（可能 direct_selector 失效）
+                    direct_selector_local = None
+                    if task.video_format and task.audio_format and mode == 'merged':
+                        direct_selector_local = f"{task.video_format}+{task.audio_format}"
+                    elif task.video_format and mode == 'video_only':
+                        direct_selector_local = task.video_format
+                    elif task.audio_format and mode == 'audio_only':
+                        direct_selector_local = task.audio_format
+                    # 若 direct 仍存在保留，否则 fallback adaptive
+                    if not direct_selector_local:
+                        format_selector = build_adaptive_selector()
+                    rc, recent = run_once(build_args(init_conc, init_chunk, use_aria=False), '[fallback] 补 probe 后重试')
+                except Exception as fp_e:
+                    task.log.append(f'[fast-path] 补 probe 异常: {fp_e}')
 
         # 如果直接格式选择失败，且我们使用了 direct_selector，则切换到自适应选择器重试一次
         if rc != 0 and direct_selector is not None and adaptive_selector:
@@ -650,9 +710,13 @@ class TaskManager:
                         task.log.append('[audio-fallback] 执行音频补抓: ' + ' '.join(audio_args))
                         logger.info(f"Task {task.id} 补抓音频: {' '.join(audio_args)}")
                         proc_a = subprocess.Popen(audio_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding='utf-8', errors='ignore', creationflags=CREATE_NO_WINDOW)
-                        for l in iter(proc_a.stdout.readline, ''):
-                            if not l: continue
-                            task.log.append('[A] ' + l.rstrip())
+                        if proc_a.stdout is None:
+                            task.log.append('[warn] 子进程未提供 stdout (audio-fallback)')
+                        else:
+                            for l in iter(proc_a.stdout.readline, ''):
+                                if not l:
+                                    continue
+                                task.log.append('[A] ' + l.rstrip())
                         proc_a.wait()
                         if proc_a.returncode != 0:
                             task.log.append(f'[audio-fallback] 音频下载失败(exit={proc_a.returncode})')
@@ -726,6 +790,13 @@ class TaskManager:
                 # 兼容旧开关：LUMINA_DISABLE_META=1 等同于 META_MODE=off
                 # 1) 每任务覆盖 > 2) 环境变量 > 3) 旧禁用布尔 > 默认 sidecar
                 raw_mode = (task.meta_mode or '').strip().lower() or os.environ.get('META_MODE') or ''
+                # 若为 PyInstaller 打包环境且用户未显式指定，则默认关闭 meta 生成
+                if not raw_mode:
+                    try:
+                        if getattr(sys, 'frozen', False):  # 打包运行
+                            raw_mode = 'off'
+                    except Exception:
+                        pass
                 raw_mode = raw_mode.strip().lower()
                 if not raw_mode:  # 未指定模式
                     # 如果未指定，若旧的禁用开关存在则 off，否则默认 sidecar
@@ -778,6 +849,14 @@ class TaskManager:
         # 最终标记完成
         self._update_task(task, status='finished', progress=100.0, stage=None)
         logger.info(f"Task {task.id} 完成: {task.file_path}")
+        # 若 fast-path 或缓存命中导致未产生任何 download% 行，则补充 synthetic timing
+        try:
+            if task.first_progress_ts is None:
+                task.first_progress_ts = time.time()
+                delta_ms = int((task.first_progress_ts - task.start_ts) * 1000)
+                task.log.append(f"[timing] time_to_first_progress={delta_ms}ms (synthetic-no-progress)")
+        except Exception:
+            pass
 
     def _fill_media_metadata(self, task: Task):
         """使用 ffprobe 填充 width/height/vcodec/acodec/filesize"""

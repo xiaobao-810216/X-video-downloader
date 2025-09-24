@@ -1,11 +1,22 @@
-# 🎬 流光下载器 (X/Twitter Video Downloader) — v3.5.0
+# 🎬 流光下载器 (X/Twitter Video Downloader) — v3.5.1
 
 [![下载最新版本](https://img.shields.io/github/v/release/xiaobao-810216/X-video-downloader?label=下载最新版本&color=blue)](https://github.com/xiaobao-810216/X-video-downloader/releases/latest)
 [![GitHub stars](https://img.shields.io/github/stars/xiaobao-810216/X-video-downloader)](https://github.com/xiaobao-810216/X-video-downloader/stargazers)
 [![License](https://img.shields.io/github/license/xiaobao-810216/X-video-downloader)](LICENSE)
 
-## 🚀 2025-09 稳定增强 (当前版本: v3.5.0)
+## 🚀 2025-09 稳定增强 (当前版本: v3.5.1)
 本次为向后不完全兼容升级，旧的 `/download` 流式端点已废弃 (410)。请所有脚本 / 前端插件 / 自动化集成尽快迁移。
+
+### v3.5.1 变更
+> 小幅增强与默认行为优化（在 v3.5.0 基础上）。
+
+- ⚡ Fast-Start：前端“快速启动”默认勾选（打包版开箱即跳过二次探测）。
+- 📴 打包环境默认关闭元数据 sidecar（可通过 UI/环境变量开启）。
+- 🛠️ fast-path 解析健壮性：info_cache 支持原始 JSON / URL 编码双路径解析，避免缓存传输中的双重编码导致失效。
+- 🕒 可观测性：若任务无真实进度（全部走 fast-path 缓存），补偿写入 synthetic timing 日志，便于确认 fast-path 命中。
+- 🧩 Fallback 策略：合并失败时自动尝试保守 mp4+m4a；仅视频成功也标记 partial_success，确保最终产物最大化。
+- 🧾 元数据模式：新增 META_MODE=off|sidecar|folder 统一策略；打包时默认 off；folder 模式可集中写入自定义目录。
+- 📄 文档：README 新增“打包运行的默认行为”章节；补充覆盖示例与环境变量说明。
 
 ### v3.5.0 新增/改进
 > 在 v3.0 基础上提升合并稳定性与使用体验。
@@ -35,6 +46,30 @@
 5. 如果之前依赖浏览器自动 cookies，请显式导出 `cookies.txt` 或设置 `LUMINA_FORCE_BROWSER_COOKIES=1`。
 6. 打包脚本更新后生成的目录应包含 `build_meta.json`；发布时附上该文件方便溯源。
 7. 验证 `/diag/version` 与 `/diag/cookie_strategy` 正常返回，确保运行环境一致。
+
+### 🧷 打包运行的默认行为 (v3.5.0+)
+为提升“点开即下”体验，打包版（PyInstaller 环境 `sys.frozen=True`）新增以下默认：
+
+| 项目 | 打包默认 | 源码运行默认 | 覆盖方式 |
+|------|----------|-------------|----------|
+| 元数据 sidecar (`*.meta.json`) | 关闭 (off) | 开启 (sidecar) | 启动前设置 `META_MODE=sidecar` 或 在界面勾选“生成元数据” |
+| 快速启动 (skip_probe fast-path) | 前端复选框预勾选 | 需手动勾选 | 取消勾选或后端强制 `LUMINA_DISABLE_FAST_START=1` (未来可加) |
+| 质量默认 | best (限制至 1080p 自适应) | 同 | 选中其它分辨率单选按钮 |
+
+说明：
+1. 打包时默认关闭 meta.json 生成以减少 I/O 和目录噪声；如需日志化/归档请显式开启。
+2. 快速启动依赖一次有效的“获取视频信息”缓存；首次粘贴链接失焦自动获取后再点“下载”即可直接跳过二次探测。
+3. 如需强制全局关闭 fast-path，可在后续版本加环境变量开关（当前 UI 可直接控制）。
+
+覆盖示例（Windows Powershell）：
+```powershell
+$env:META_MODE="sidecar"; .\流光下载器.exe
+```
+
+或仅生成专用目录的元数据：
+```powershell
+$env:META_MODE="folder"; $env:LUMINA_META_DIR="D:\MetaArchive"; .\流光下载器.exe
+```
 
 ### API 变化摘要
 | 旧 | 新 | 状态 |
@@ -257,6 +292,7 @@ curl -N "http://127.0.0.1:5001/api/stream_task?url=...&mode=merged&quality=best"
 - **v1.0** - 初始发布，基础下载功能
 - **v2.0** - 新增字幕下载、播放列表支持、界面美化
 - **v3.0 (2025-09)** - 统一 `/api/stream_task` SSE、废弃 `/download`、新增任务/取消接口、可观测诊断端点、Cookies 策略重写、构建元数据与打包稳定性提升
+- **v3.5.1 (2025-09)** - Fast-Start 默认开启；打包默认关闭 meta；info_cache 解析增强；补充 synthetic timing；META_MODE 模式化
 - **v3.5.0 (2025-09)** - 合并失败自动回退；分辨率选择记忆；集中版本号；发布包命名改进；`build_meta.json` 增加 version 字段
 
 ## ⚖️ 许可证

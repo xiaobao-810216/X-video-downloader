@@ -360,8 +360,16 @@ def main():
 
 if __name__ == "__main__":
     # 设置标准输出编码为 UTF-8
-    if sys.stdout.encoding != 'utf-8':
-        sys.stdout.reconfigure(encoding='utf-8')
-    if sys.stderr.encoding != 'utf-8':
-        sys.stderr.reconfigure(encoding='utf-8')
+    if getattr(sys.stdout, 'encoding', None) != 'utf-8':
+        if hasattr(sys.stdout, 'reconfigure'):
+            try:
+                sys.stdout.reconfigure(encoding='utf-8')  # type: ignore[attr-defined]
+            except Exception:
+                pass
+    if getattr(sys.stderr, 'encoding', None) != 'utf-8':
+        if hasattr(sys.stderr, 'reconfigure'):
+            try:
+                sys.stderr.reconfigure(encoding='utf-8')  # type: ignore[attr-defined]
+            except Exception:
+                pass
     sys.exit(main())

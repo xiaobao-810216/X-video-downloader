@@ -1,0 +1,16 @@
+{
+  "include": ["."],
+  "exclude": ["dist", "build", "release", "*.stale_*", ".venv"],
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "extraPaths": [
+        "./",
+        "./dist/流光下载器",
+        "./release"
+      ]
+    }
+  ]
+}
